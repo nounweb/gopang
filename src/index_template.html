@@ -3,793 +3,1343 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<meta name="theme-color" content="#1d1d1f">
+<meta name="theme-color" content="#0a0a0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="고팡">
+<meta name="apple-mobile-web-app-title" content="고팡 K-Law">
 <link rel="manifest" href="./manifest.json">
-<title>고팡 — K-Law 통합 예방 법학 메신저</title>
+<title>고팡 — K-Law {{VERSION}} 가상 판결 시뮬레이터</title>
 <style>
-:root{
-  --bg0:#f5f5f7;--bg1:#fff;--bg2:#f5f5f7;--bg3:#e8e8ed;--bg4:#d1d1d6;
-  --t1:#1d1d1f;--t2:#6e6e73;--t3:#aeaeb2;
-  --blue:#007aff;--blue-bg:rgba(0,122,255,.09);
-  --green:#34c759;--amber:#ff9f0a;--orange:#ff6b35;--red:#ff3b30;
-  --sep:rgba(0,0,0,.08);--sep2:rgba(0,0,0,.14);
-  --r6:6px;--r10:10px;--r14:14px;--r18:18px;--r22:22px;
-  --nav:62px;--side:272px;
-  --tab-h:54px;   /* 탭바 높이 */
-  --font:-apple-system,"Helvetica Neue",sans-serif;
-  --mono:"SF Mono","Menlo",monospace;
-  --ease:cubic-bezier(.25,.46,.45,.94);
+/* ══════════════════════════════════════════════
+   디자인 토큰
+══════════════════════════════════════════════ */
+:root {
+  --bg0: #0a0a0f;
+  --bg1: #111118;
+  --bg2: #18181f;
+  --bg3: #22222c;
+  --bg4: #2e2e3a;
+  --t1: #f0f0f5;
+  --t2: #8888a0;
+  --t3: #44445a;
+  --accent: #5b6ef5;
+  --accent2: #8b5cf6;
+  --accent-glow: rgba(91,110,245,.18);
+  --gold: #f4c26a;
+  --gold-bg: rgba(244,194,106,.08);
+  --green: #34d399;
+  --green-bg: rgba(52,211,153,.08);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,.08);
+  --amber: #fbbf24;
+  --sep: rgba(255,255,255,.06);
+  --sep2: rgba(255,255,255,.1);
+  --r6: 6px; --r10: 10px; --r14: 14px; --r18: 18px;
+  --font: "Apple SD Gothic Neo", "Malgun Gothic", -apple-system, sans-serif;
+  --mono: "SF Mono", "Menlo", "Consolas", monospace;
+  --ease: cubic-bezier(.25,.46,.45,.94);
+  --tab-h: 56px;
 }
-@media(prefers-color-scheme:dark){:root{
-  --bg0:#000;--bg1:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--bg4:#48484a;
-  --t1:#f5f5f7;--t2:#98989d;--t3:#636366;
-  --sep:rgba(255,255,255,.08);--sep2:rgba(255,255,255,.14);
-  --blue-bg:rgba(0,122,255,.16);
-}}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:var(--font);font-size:15px;background:var(--bg0);color:var(--t1);-webkit-font-smoothing:antialiased;}
-button{font-family:var(--font);cursor:pointer;border:none;background:none;color:inherit;}
-input,textarea,select{font-family:var(--font);}
 
-/* ── 앱 컨테이너 ── */
-#app{display:flex;height:100vh;max-width:1040px;margin:0 auto;
-  background:var(--bg1);box-shadow:0 0 0 .5px var(--sep2),0 8px 40px rgba(0,0,0,.12);}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  font-family: var(--font);
+  font-size: 15px;
+  background: var(--bg0);
+  color: var(--t1);
+  -webkit-font-smoothing: antialiased;
+}
+button { font-family: var(--font); cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea, select { font-family: var(--font); }
 
-/* ── 데스크탑 네비 ── */
-#nav{width:var(--nav);background:var(--bg2);border-right:.5px solid var(--sep);
-  display:flex;flex-direction:column;align-items:center;padding:14px 0 18px;gap:2px;flex-shrink:0;}
-.nav-logo{width:34px;height:34px;background:var(--t1);border-radius:var(--r10);
-  display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0;}
-.nav-logo svg{width:17px;height:17px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.ni{width:44px;height:44px;border-radius:var(--r10);display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:3px;color:var(--t3);
-  transition:background .14s,color .14s;position:relative;}
-.ni:hover{background:var(--bg3);color:var(--t1);}
-.ni.on{background:var(--bg1);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.07);}
-.ni svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.nl{font-size:9px;font-weight:500;letter-spacing:.02em;}
-.nav-sp{flex:1;}
+/* ══════════════════════════════════════════════
+   앱 레이아웃 (사이드바 없음)
+══════════════════════════════════════════════ */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--bg1);
+  box-shadow: 0 0 0 .5px var(--sep2), 0 0 80px rgba(91,110,245,.08);
+  position: relative;
+}
 
-/* ── 사이드바 ── */
-#sb{width:var(--side);background:var(--bg2);border-right:.5px solid var(--sep);
-  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
-.sb-hd{padding:20px 16px 12px;}
-.sb-title{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:12px;}
-.srch{display:flex;align-items:center;gap:7px;background:var(--bg3);border-radius:var(--r10);padding:7px 10px;}
-.srch svg{width:15px;height:15px;stroke:var(--t3);stroke-width:2;fill:none;stroke-linecap:round;flex-shrink:0;}
-.srch input{border:none;background:transparent;font-size:14px;color:var(--t1);width:100%;outline:none;}
-.srch input::placeholder{color:var(--t3);}
-.clist{overflow-y:auto;flex:1;}
-.clist::-webkit-scrollbar{width:0;}
-.ci{display:flex;align-items:center;gap:11px;padding:10px 16px;cursor:pointer;transition:background .1s;position:relative;}
-.ci::after{content:'';position:absolute;bottom:0;left:67px;right:0;height:.5px;background:var(--sep);}
-.ci:hover{background:var(--bg3);}
-.ci.on{background:var(--blue-bg);}
-.ci.on::after{display:none;}
-.av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-weight:600;font-size:15px;color:#fff!important;flex-shrink:0;}
-.av-ai{background:var(--t1);}
-.av-k{background:#6e6e73;}
-.av-t{background:#8e8e93;}
-.av-p{background:#48484a;}
-.ci-info{flex:1;min-width:0;}
-.ci-name{font-size:15px;font-weight:600;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1);}
-.ci-prev{font-size:13px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
-.ci-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
-.ci-time{font-size:12px;color:var(--t3);}
-.udot{width:18px;height:18px;background:var(--blue);border-radius:9px;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;}
-.rdot{width:7px;height:7px;border-radius:50%;}
-.rs3{background:var(--red);}
+/* ══════════════════════════════════════════════
+   헤더 탭바
+══════════════════════════════════════════════ */
+#header {
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  height: 54px;
+  background: var(--bg1);
+  border-bottom: .5px solid var(--sep);
+  flex-shrink: 0;
+  gap: 6px;
+  position: relative;
+}
 
-/* ── 메인 ── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
-.pn{display:none;}
-.pn.on{display:flex;}
+.hd-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-right: 16px;
+  text-decoration: none;
+}
+.hd-logo-mark {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.hd-logo-mark svg { width: 15px; height: 15px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.hd-logo-text { font-size: 15px; font-weight: 700; color: var(--t1); letter-spacing: -.2px; }
 
-/* ══════════════════════════════════════
+.tab-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px; font-weight: 500;
+  color: var(--t2);
+  transition: all .15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { background: var(--bg3); color: var(--t1); }
+.tab-btn.on { background: var(--accent-glow); color: var(--accent); }
+.tab-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+.hd-sp { flex: 1; }
+
+.ver-badge {
+  font-size: 10px; font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: .5px solid rgba(91,110,245,.25);
+  border-radius: 100px;
+  padding: 2px 8px;
+  letter-spacing: .04em;
+}
+
+/* ══════════════════════════════════════════════
+   패널
+══════════════════════════════════════════════ */
+.pn { display: none; flex: 1; overflow: hidden; }
+.pn.on { display: flex; flex-direction: column; }
+
+/* ══════════════════════════════════════════════
    채팅 패널
-══════════════════════════════════════ */
-#cv{flex-direction:column;height:100%;}
-/* 데스크탑 채팅 헤더 */
-.ch{display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;
-  border-bottom:.5px solid var(--sep);background:var(--bg1);flex-shrink:0;}
-.ch-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:600;color:#fff!important;flex-shrink:0;}
-.ch-info{flex:1;}
-.ch-name{font-size:15px;font-weight:600;letter-spacing:-.2px;}
-.ch-sub{font-size:11px;color:var(--t2);margin-top:1px;}
-.ch-acts{display:flex;gap:2px;}
-.ibtn{width:32px;height:32px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;color:var(--t2);transition:background .1s;}
-.ibtn:hover{background:var(--bg2);}
-.ibtn svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-/* 메시지 영역 */
-.ma{flex:1;overflow-y:auto;padding:18px 16px;background:var(--bg2);display:flex;flex-direction:column;gap:2px;}
-.ma::-webkit-scrollbar{width:0;}
-.dlbl{text-align:center;font-size:12px;font-weight:500;color:var(--t3);margin:6px 0 14px;}
-.mr{display:flex;align-items:flex-end;gap:6px;}
-.mr.me{flex-direction:row-reverse;}
-.mr+.mr{margin-top:2px;}
-.mr.gap{margin-top:12px;}
-.mav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:600;color:#fff!important;flex-shrink:0;align-self:flex-end;}
-.mc{display:flex;flex-direction:column;max-width:68%;gap:1px;}
-.mr.me .mc{align-items:flex-end;}
-.msdr{font-size:11px;color:var(--t3);margin-bottom:3px;padding:0 14px;}
-.bb{padding:9px 14px;border-radius:18px;font-size:15px;line-height:1.5;word-break:break-word;}
-.bb-me{background:var(--blue);color:#fff;border-bottom-right-radius:4px;}
-.bb-ot{background:var(--bg1);color:var(--t1);border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.06);}
-.mt{font-size:10px;color:var(--t3);padding:0 4px;margin-top:2px;}
-.gt{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;font-size:11px;font-weight:500;margin-top:4px;}
-.gt .d{width:5px;height:5px;border-radius:50%;}
-.gs0{color:var(--green);background:rgba(52,199,89,.08);} .gs0 .d{background:var(--green);}
-.gs2{color:var(--orange);background:rgba(255,107,53,.08);} .gs2 .d{background:var(--orange);}
-.gs3{color:var(--red);background:rgba(255,59,48,.08);} .gs3 .d{background:var(--red);}
-/* AI 경고 카드 */
-.aic{background:var(--t1);border-radius:var(--r18);padding:15px 17px;max-width:84%;margin:8px 0 4px;}
-.aic-hd{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
-.aic-ico{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;}
-.aic-ico svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.aic-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.05em;text-transform:uppercase;}
-.aic-grade{margin-left:auto;font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;}
-.aic-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:5px;}
-.aic-body{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;}
-.aic-score{font-weight:600;color:rgba(255,255,255,.85);}
-.aic-acts{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap;}
-.abtn{background:rgba(255,255,255,.09);color:rgba(255,255,255,.8);border-radius:var(--r6);padding:6px 12px;font-size:12px;font-weight:500;transition:background .1s;}
-.abtn:hover,.abtn:active{background:rgba(255,255,255,.16);}
-.aic-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
-.atag{background:rgba(255,255,255,.05);color:rgba(255,255,255,.35);border-radius:100px;padding:2px 8px;font-size:11px;}
-/* 분석 중 */
-.anlz{display:none;align-items:center;gap:8px;padding:5px 16px;font-size:12px;color:var(--t3);background:var(--bg2);flex-shrink:0;}
-@keyframes p{0%,100%{opacity:1}50%{opacity:.25}}
-.pd{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:p .9s ease-in-out infinite;}
-/* 첨부 미리보기 */
-.attach-pv{display:none;align-items:center;gap:8px;padding:8px 14px;
-  background:var(--bg2);border-top:.5px solid var(--sep);font-size:13px;color:var(--t1);flex-shrink:0;}
-.attach-pv.show{display:flex;}
-.ap-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.ap-rm{width:24px;height:24px;border-radius:50%;background:var(--bg3);border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ap-rm svg{width:12px;height:12px;stroke:var(--t2);stroke-width:2;fill:none;}
+══════════════════════════════════════════════ */
+#cv { height: 100%; }
 
-/* ══════════════════════════════════════
-   입력창 — 탭바와 완전히 독립
-══════════════════════════════════════ */
-.inbar{
-  display:flex;align-items:flex-end;gap:4px;
-  padding:8px 12px 12px;
-  background:var(--bg1);
-  border-top:.5px solid var(--sep);
-  flex-shrink:0;          /* 패널 내 고정 크기 */
-  /* 탭바와 무관하게 항상 메시지 영역 바로 아래에 위치 */
+.chat-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 16px; height: 50px;
+  border-bottom: .5px solid var(--sep);
+  flex-shrink: 0;
 }
-.mbtn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  color:var(--t3);flex-shrink:0;transition:color .1s,background .1s;-webkit-tap-highlight-color:transparent;}
-.mbtn:hover,.mbtn:active{color:var(--blue);background:var(--blue-bg);}
-.mbtn svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.mbtn.recording{color:var(--red);}
-.inw{flex:1;background:var(--bg2);border-radius:var(--r22);border:.5px solid var(--sep2);
-  display:flex;align-items:flex-end;padding:8px 12px;transition:border-color .15s;}
-.inw:focus-within{border-color:var(--blue);}
-#mi{flex:1;border:none;background:transparent;font-size:15px;color:var(--t1);
-  outline:none;resize:none;min-height:22px;max-height:120px;line-height:1.5;}
-#mi::placeholder{color:var(--t3);}
-.sbtn{width:34px;height:34px;background:var(--blue);border-radius:50%;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:background .15s,transform .08s;-webkit-tap-highlight-color:transparent;}
-.sbtn:hover{background:#0066d6;}
-.sbtn:active{transform:scale(.9);}
-.sbtn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.chat-av {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.chat-name { font-size: 15px; font-weight: 600; }
+.chat-sub { font-size: 11px; color: var(--t2); margin-top: 1px; }
 
-/* ══════════════════════════════════════
-   K-Law 패널
-══════════════════════════════════════ */
-#klv{flex-direction:column;height:100%;overflow-y:auto;}
-#klv::-webkit-scrollbar{width:0;}
-.vh{padding:26px 24px 0;position:sticky;top:0;background:var(--bg1);z-index:1;}
-.vh h2{font-size:27px;font-weight:700;letter-spacing:-.5px;}
-.vh p{font-size:13px;color:var(--t2);margin-top:4px;padding-bottom:16px;border-bottom:.5px solid var(--sep);}
-.sc{background:var(--bg2);border-radius:var(--r14);padding:15px 17px;border:.5px solid var(--sep);}
-.slbl{font-size:12px;color:var(--t2);font-weight:500;}
-.sval{font-size:25px;font-weight:700;letter-spacing:-.5px;margin-top:4px;}
-.su{font-size:13px;font-weight:400;color:var(--t2);}
-.sec{padding:22px 24px 0;}
-.seclbl{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px;}
-.cc{background:var(--bg2);border:.5px solid var(--sep);border-radius:var(--r14);padding:13px 15px;margin-bottom:8px;cursor:pointer;transition:background .1s;}
-.cc:hover,.cc:active{background:var(--bg3);}
-.ccr{display:flex;align-items:center;justify-content:space-between;}
-.cct{font-size:14px;font-weight:600;}
-.chip{font-size:11px;font-weight:500;padding:2px 9px;border-radius:100px;}
-.chip-a{background:rgba(0,122,255,.1);color:var(--blue);}
-.chip-d{background:rgba(52,199,89,.1);color:var(--green);}
-.ccd{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5;}
-.kq-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
-  background:var(--bg2);border:.5px solid var(--sep2);border-radius:var(--r14);
-  padding:14px 10px;font-size:12px;font-weight:500;color:var(--t1);cursor:pointer;transition:background .1s;}
-.kq-btn:hover,.kq-btn:active{background:var(--bg3);}
-.kq-btn svg{width:20px;height:20px;stroke:var(--blue);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.fs{padding:22px 24px;border-top:.5px solid var(--sep);margin-top:8px;}
-.fl{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:.05em;}
-.fsel,.fta{width:100%;background:var(--bg2);border:.5px solid var(--sep2);border-radius:var(--r10);
-  padding:10px 13px;font-size:14px;color:var(--t1);outline:none;margin-bottom:13px;transition:border-color .15s;-webkit-appearance:none;}
-.fsel:focus,.fta:focus{border-color:var(--blue);}
-.fta{resize:vertical;min-height:88px;line-height:1.55;}
-.brow{display:flex;gap:8px;}
-.bp{flex:1;background:var(--t1);color:var(--bg1);border-radius:var(--r10);padding:11px;font-size:14px;font-weight:600;transition:opacity .15s;}
-.bp:hover{opacity:.82;} .bp:disabled{opacity:.38;}
-.bs{flex:1;background:var(--bg2);color:var(--t1);border-radius:var(--r10);padding:11px;font-size:14px;font-weight:500;border:.5px solid var(--sep2);transition:background .1s;}
-.bs:hover,.bs:active{background:var(--bg3);}
-.vc{background:var(--bg2);border:.5px solid var(--sep2);border-radius:var(--r14);padding:17px 19px;margin-top:13px;display:none;}
-.vc.on{display:block;animation:fu .22s var(--ease);}
-@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-.vver{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
-.vres{font-size:17px;font-weight:700;letter-spacing:-.2px;margin-bottom:9px;}
-.vreason{font-size:13px;color:var(--t2);line-height:1.7;}
-.cw{margin-top:11px;}
-.cr{display:flex;justify-content:space-between;font-size:12px;color:var(--t3);margin-bottom:5px;}
-.ct{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
-.cf{height:100%;background:var(--t1);border-radius:2px;transition:width .55s var(--ease);}
-.hr{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;color:var(--t3);font-family:var(--mono);}
-.hd{width:6px;height:6px;border-radius:50%;background:var(--green);}
+.ma {
+  flex: 1; overflow-y: auto;
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 2px;
+  background: var(--bg0);
+}
+.ma::-webkit-scrollbar { width: 4px; }
+.ma::-webkit-scrollbar-track { background: transparent; }
+.ma::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
 
-/* PDV / 친구 / 설정 */
-#pv,#frv,#stv{flex-direction:column;height:100%;overflow-y:auto;}
-#pv::-webkit-scrollbar,#frv::-webkit-scrollbar,#stv::-webkit-scrollbar{width:0;}
-.vg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 24px;}
-.vc2{background:var(--bg2);border-radius:var(--r14);padding:14px 10px;cursor:pointer;border:.5px solid var(--sep);transition:background .1s;text-align:center;}
-.vc2:hover,.vc2:active{background:var(--bg3);}
-.vci{font-size:22px;margin-bottom:5px;} .vcn{font-size:12px;font-weight:600;} .vcc{font-size:11px;color:var(--t3);margin-top:2px;}
-.rl{padding:0 24px 16px;}
-.ri{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:.5px solid var(--sep);}
-.rit{font-size:14px;font-weight:500;} .ris{font-size:11px;color:var(--t3);margin-top:3px;}
-.itag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--green);}
-.itag svg{width:12px;height:12px;stroke:var(--green);stroke-width:2.5;fill:none;}
-.pba{display:flex;gap:8px;padding:0 24px 28px;}
-.frl{padding:0 24px;}
-.fri{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:.5px solid var(--sep);cursor:pointer;}
-.frn{font-size:15px;font-weight:500;} .frs{font-size:12px;color:var(--t3);margin-top:2px;}
-.fbdg{font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;}
-.bsf{background:rgba(52,199,89,.1);color:var(--green);} .bwn{background:rgba(255,59,48,.08);color:var(--red);}
-.stc{padding:0 24px 40px;} .stg{margin-bottom:26px;}
-.stgl{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
-.str{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-bottom:.5px solid var(--sep);}
-.str:first-of-type{border-radius:var(--r10) var(--r10) 0 0;} .str:last-of-type{border-radius:0 0 var(--r10) var(--r10);border-bottom:none;} .str:only-of-type{border-radius:var(--r10);border-bottom:none;}
-.str label{font-size:14px;color:var(--t1);}
-.ios{position:relative;display:inline-block;width:50px;height:30px;} .ios input{display:none;}
-.iotr{position:absolute;inset:0;background:var(--bg4);border-radius:15px;cursor:pointer;transition:background .24s;}
-.iotr::after{content:'';position:absolute;left:3px;top:3px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .24s;box-shadow:0 1px 4px rgba(0,0,0,.22);}
-.ios input:checked+.iotr{background:var(--blue);} .ios input:checked+.iotr::after{transform:translateX(20px);}
-.stin{background:transparent;border:none;text-align:right;font-size:14px;color:var(--t2);outline:none;max-width:200px;}
-.vblk{background:var(--bg2);border:.5px solid var(--sep);border-radius:var(--r10);padding:14px 16px;}
-.vblk h4{font-size:14px;font-weight:600;margin-bottom:4px;} .vblk p{font-size:12px;color:var(--t2);line-height:1.6;}
-.mno{font-family:var(--mono);font-size:11px;color:var(--t3);}
-@keyframes sp{to{transform:rotate(360deg)}}
-.spn{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px;}
-.hid{display:none!important;}
+.mr { display: flex; align-items: flex-end; gap: 6px; }
+.mr.me { flex-direction: row-reverse; }
+.mr + .mr { margin-top: 1px; }
+.mr.gap { margin-top: 10px; }
+.mav { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; flex-shrink: 0; align-self: flex-end; }
+.mc { display: flex; flex-direction: column; max-width: 70%; gap: 1px; }
+.mr.me .mc { align-items: flex-end; }
+.bb { padding: 9px 13px; border-radius: 18px; font-size: 14px; line-height: 1.55; word-break: break-word; }
+.bb-me { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.bb-ot { background: var(--bg2); color: var(--t1); border-bottom-left-radius: 4px; border: .5px solid var(--sep); }
+.mt { font-size: 10px; color: var(--t3); padding: 0 4px; margin-top: 1px; }
 
-/* ══════════════════════════════════════
-   모바일 하단 탭바
-   — 입력창(.inbar)과 완전히 분리된 fixed 레이어
-══════════════════════════════════════ */
+/* AI 분석 카드 */
+.aic {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: .5px solid var(--sep2);
+  border-radius: var(--r18); padding: 14px 16px;
+  max-width: 86%; margin: 6px 0 4px;
+}
+.aic-hd { display: flex; align-items: center; gap: 7px; margin-bottom: 8px; }
+.aic-ico { width: 24px; height: 24px; border-radius: 50%; background: var(--accent-glow); display: flex; align-items: center; justify-content: center; }
+.aic-ico svg { width: 12px; height: 12px; stroke: var(--accent); stroke-width: 2.2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.aic-lbl { font-size: 10px; font-weight: 700; color: var(--t2); letter-spacing: .08em; text-transform: uppercase; }
+.aic-grade { margin-left: auto; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 100px; }
+.grade-warn { background: rgba(248,113,113,.15); color: var(--red); }
+.grade-ok { background: var(--green-bg); color: var(--green); }
+.aic-title { font-size: 13px; font-weight: 700; color: var(--t1); margin-bottom: 4px; }
+.aic-body { font-size: 12px; color: var(--t2); line-height: 1.65; }
+.aic-acts { display: flex; gap: 5px; margin-top: 10px; flex-wrap: wrap; }
+.abtn { background: var(--bg3); color: var(--t2); border: .5px solid var(--sep); border-radius: var(--r6); padding: 5px 11px; font-size: 12px; font-weight: 500; transition: all .1s; }
+.abtn:hover { background: var(--bg4); color: var(--t1); }
+
+/* 입력창 */
+.inbar {
+  display: flex; align-items: flex-end; gap: 6px;
+  padding: 8px 12px 12px;
+  background: var(--bg1);
+  border-top: .5px solid var(--sep);
+  flex-shrink: 0;
+}
+.mbtn { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--t2); flex-shrink: 0; transition: all .1s; }
+.mbtn:hover { color: var(--accent); background: var(--accent-glow); }
+.mbtn svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.inw { flex: 1; background: var(--bg2); border-radius: 22px; border: .5px solid var(--sep2); display: flex; align-items: flex-end; padding: 8px 13px; transition: border-color .15s; }
+.inw:focus-within { border-color: var(--accent); }
+#mi { flex: 1; border: none; background: transparent; font-size: 15px; color: var(--t1); outline: none; resize: none; min-height: 22px; max-height: 120px; line-height: 1.5; }
+#mi::placeholder { color: var(--t3); }
+.sbtn { width: 34px; height: 34px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; }
+.sbtn:hover { background: #4a5de0; }
+.sbtn:active { transform: scale(.9); }
+.sbtn svg { width: 13px; height: 13px; stroke: #fff; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ══════════════════════════════════════════════
+   K-Law 패널 — 메인 판결 시뮬레이터
+══════════════════════════════════════════════ */
+#klv {
+  overflow-y: auto;
+  background: var(--bg0);
+  padding: 0;
+}
+#klv::-webkit-scrollbar { width: 4px; }
+#klv::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+/* 상단 설명 */
+.kl-hero {
+  padding: 28px 28px 20px;
+  background: linear-gradient(180deg, rgba(91,110,245,.06) 0%, transparent 100%);
+  border-bottom: .5px solid var(--sep);
+}
+.kl-hero-title {
+  font-size: 22px; font-weight: 800; letter-spacing: -.5px;
+  background: linear-gradient(135deg, var(--t1), var(--t2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 5px;
+}
+.kl-hero-sub { font-size: 13px; color: var(--t2); line-height: 1.6; }
+
+/* 사건 개요 입력 */
+.kl-input-section { padding: 22px 28px 0; }
+.kl-section-label {
+  font-size: 11px; font-weight: 700; color: var(--accent);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.kl-section-label::after { content: ''; flex: 1; height: .5px; background: var(--sep); }
+
+.kl-textarea {
+  width: 100%;
+  background: var(--bg2);
+  border: .5px solid var(--sep2);
+  border-radius: var(--r14);
+  padding: 14px 16px;
+  font-size: 14px; line-height: 1.65;
+  color: var(--t1); resize: vertical;
+  min-height: 120px; max-height: 240px;
+  outline: none;
+  transition: border-color .15s;
+}
+.kl-textarea:focus { border-color: var(--accent); }
+.kl-textarea::placeholder { color: var(--t3); }
+
+.kl-parse-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  width: 100%; margin-top: 10px;
+  background: var(--bg2);
+  border: .5px solid var(--sep2);
+  border-radius: var(--r10);
+  padding: 11px;
+  font-size: 14px; font-weight: 600; color: var(--t2);
+  transition: all .15s;
+}
+.kl-parse-btn:hover { background: var(--bg3); color: var(--t1); border-color: var(--accent); }
+.kl-parse-btn svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* 파싱 결과 섹션들 */
+.kl-parsed { padding: 20px 28px 0; display: none; }
+.kl-parsed.on { display: block; animation: fadeUp .3s var(--ease); }
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.parsed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.parsed-card {
+  background: var(--bg2);
+  border: .5px solid var(--sep);
+  border-radius: var(--r14);
+  padding: 13px 15px;
+  position: relative;
+  overflow: hidden;
+}
+.parsed-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0;
+  width: 3px; height: 100%;
+}
+.parsed-card.plaintiff::before { background: var(--accent); }
+.parsed-card.defendant::before { background: var(--red); }
+.parsed-card.undisputed::before { background: var(--green); }
+.parsed-card.issue::before { background: var(--gold); }
+.parsed-card.type::before { background: var(--accent2); }
+.parsed-card-full {
+  grid-column: 1 / -1;
+}
+
+.pc-label {
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 7px;
+}
+.plaintiff .pc-label { color: var(--accent); }
+.defendant .pc-label { color: var(--red); }
+.undisputed .pc-label { color: var(--green); }
+.issue .pc-label { color: var(--gold); }
+.type .pc-label { color: var(--accent2); }
+
+.pc-content { font-size: 13px; color: var(--t1); line-height: 1.65; }
+.pc-loading { display: flex; align-items: center; gap: 6px; color: var(--t3); font-size: 12px; }
+
+/* 사건 유형 배지 */
+.type-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 13px; font-weight: 700;
+}
+.type-민사 { background: var(--accent-glow); color: var(--accent); }
+.type-형사 { background: var(--red-bg); color: var(--red); }
+.type-행정 { background: var(--green-bg); color: var(--green); }
+.type-노동 { background: var(--gold-bg); color: var(--gold); }
+.type-가사 { background: rgba(139,92,246,.1); color: var(--accent2); }
+.type-기타 { background: var(--bg3); color: var(--t2); }
+
+/* 판결 시작 버튼 */
+.kl-start-wrap { padding: 16px 28px 0; display: none; }
+.kl-start-wrap.on { display: block; }
+.kl-start-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  border-radius: var(--r14);
+  padding: 15px;
+  font-size: 15px; font-weight: 700; color: #fff;
+  transition: all .2s;
+  box-shadow: 0 4px 20px rgba(91,110,245,.3);
+}
+.kl-start-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 28px rgba(91,110,245,.4); }
+.kl-start-btn:active { transform: none; }
+.kl-start-btn:disabled { opacity: .45; pointer-events: none; }
+.kl-start-btn svg { width: 17px; height: 17px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ── Progress Bar 섹션 ── */
+.kl-progress { padding: 20px 28px 0; display: none; }
+.kl-progress.on { display: block; animation: fadeUp .3s var(--ease); }
+
+.prog-title { font-size: 13px; font-weight: 600; color: var(--t2); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+.prog-title .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.8)} }
+
+.prog-bar-wrap { background: var(--bg3); border-radius: 4px; height: 4px; margin-bottom: 6px; overflow: hidden; }
+.prog-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; width: 0%; transition: width .5s var(--ease); }
+
+.prog-steps { display: flex; flex-direction: column; gap: 3px; margin-top: 14px; }
+.prog-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--r10);
+  font-size: 13px; color: var(--t3);
+  transition: all .2s;
+}
+.prog-step.active { background: var(--accent-glow); color: var(--accent); }
+.prog-step.done { color: var(--green); }
+.prog-step.error { color: var(--red); }
+.step-icon { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+.step-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.step-spinner { width: 14px; height: 14px; border: 1.5px solid rgba(91,110,245,.3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.step-check { color: var(--green); font-weight: 700; }
+.step-text { flex: 1; line-height: 1.5; }
+.step-subtext { font-size: 11px; color: var(--t3); margin-top: 2px; }
+.prog-step.active .step-subtext { color: rgba(91,110,245,.6); }
+
+/* ── Thinking 박스 ── */
+.thinking-box {
+  margin: 14px 28px 0;
+  background: var(--bg2);
+  border: .5px solid var(--sep);
+  border-radius: var(--r14);
+  overflow: hidden;
+  display: none;
+}
+.thinking-box.on { display: block; animation: fadeUp .3s var(--ease); }
+.thinking-header {
+  display: flex; align-items: center; gap: 7px;
+  padding: 11px 14px;
+  cursor: pointer;
+  border-bottom: .5px solid var(--sep);
+  font-size: 12px; font-weight: 600; color: var(--t2);
+  user-select: none;
+}
+.thinking-header svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2; fill: none; transition: transform .2s; }
+.thinking-box.collapsed .thinking-header svg { transform: rotate(-90deg); }
+.thinking-body {
+  padding: 12px 14px;
+  font-size: 11px; font-family: var(--mono);
+  color: var(--t3); line-height: 1.7;
+  max-height: 160px; overflow-y: auto;
+  white-space: pre-wrap; word-break: break-all;
+}
+.thinking-box.collapsed .thinking-body { display: none; }
+
+/* ── 판결문 출력 ── */
+.kl-verdict { padding: 20px 28px 32px; display: none; }
+.kl-verdict.on { display: block; animation: fadeUp .35s var(--ease); }
+
+.verdict-header {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+.verdict-title { font-size: 17px; font-weight: 800; letter-spacing: -.3px; }
+.verdict-stamp {
+  margin-left: auto;
+  font-size: 10px; font-weight: 700; letter-spacing: .06em;
+  padding: 3px 9px; border-radius: 100px;
+  background: var(--green-bg); color: var(--green);
+}
+.verdict-stamp.streaming { background: var(--accent-glow); color: var(--accent); }
+
+/* STEP 카드 */
+.step-card {
+  background: var(--bg2);
+  border: .5px solid var(--sep);
+  border-radius: var(--r14);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.step-card-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 14px;
+  border-bottom: .5px solid var(--sep);
+  font-size: 12px; font-weight: 700;
+  cursor: pointer; user-select: none;
+  transition: background .1s;
+}
+.step-card-header:hover { background: var(--bg3); }
+.step-num {
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent-glow);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800; color: var(--accent);
+  flex-shrink: 0;
+}
+.step-card-title { flex: 1; color: var(--t1); }
+.step-card-tag {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 7px; border-radius: 100px;
+  background: var(--accent-glow); color: var(--accent);
+}
+.step-card-body {
+  padding: 13px 15px;
+  font-size: 13px; line-height: 1.75;
+  color: var(--t1);
+  white-space: pre-wrap;
+}
+
+/* 주문 카드 */
+.order-card {
+  background: linear-gradient(135deg, var(--bg2), var(--bg3));
+  border: .5px solid rgba(91,110,245,.3);
+  border-radius: var(--r18);
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 4px 24px rgba(91,110,245,.08);
+}
+.order-title { font-size: 13px; font-weight: 800; color: var(--accent); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+.order-result {
+  font-size: 20px; font-weight: 800; letter-spacing: -.3px;
+  margin-bottom: 10px;
+}
+.order-result.win { color: var(--green); }
+.order-result.lose { color: var(--red); }
+.order-result.partial { color: var(--gold); }
+.order-body { font-size: 13px; color: var(--t2); line-height: 1.7; }
+.conf-wrap { margin-top: 14px; }
+.conf-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--t3); margin-bottom: 5px; }
+.conf-bar { height: 5px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+.conf-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 3px; transition: width .8s var(--ease); }
+
+/* ══════════════════════════════════════════════
+   설정 패널
+══════════════════════════════════════════════ */
+#stv { overflow-y: auto; background: var(--bg0); padding: 24px 28px 60px; }
+#stv::-webkit-scrollbar { width: 4px; }
+#stv::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 2px; }
+
+.st-section { margin-bottom: 28px; }
+.st-label {
+  font-size: 11px; font-weight: 700; color: var(--accent);
+  letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+}
+.st-label::after { content: ''; flex: 1; height: .5px; background: var(--sep); }
+
+.st-card { background: var(--bg2); border: .5px solid var(--sep); border-radius: var(--r14); overflow: hidden; }
+.st-row {
+  display: flex; align-items: center;
+  padding: 13px 16px;
+  border-bottom: .5px solid var(--sep);
+  gap: 12px;
+}
+.st-row:last-child { border-bottom: none; }
+.st-row-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.st-row-icon svg { width: 14px; height: 14px; stroke: #fff; stroke-width: 2; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.icon-blue { background: var(--accent); }
+.icon-purple { background: var(--accent2); }
+.icon-green { background: var(--green); }
+.st-row-info { flex: 1; }
+.st-row-title { font-size: 14px; font-weight: 500; }
+.st-row-sub { font-size: 11px; color: var(--t2); margin-top: 2px; }
+.st-input {
+  background: var(--bg3); border: .5px solid var(--sep2);
+  border-radius: 8px; padding: 7px 11px;
+  font-size: 13px; color: var(--t1);
+  outline: none; text-align: right;
+  min-width: 180px;
+  transition: border-color .15s;
+}
+.st-input:focus { border-color: var(--accent); }
+.st-input.password { letter-spacing: 2px; font-family: var(--mono); }
+.save-btn {
+  width: 100%; padding: 12px;
+  background: var(--accent);
+  color: #fff; border-radius: var(--r10);
+  font-size: 14px; font-weight: 700;
+  transition: all .15s; margin-top: 12px;
+}
+.save-btn:hover { background: #4a5de0; }
+
+/* ══════════════════════════════════════════════
+   모바일 탭바
+══════════════════════════════════════════════ */
 #mob-tab {
-  display: none;             /* 데스크탑: 숨김 */
-  position: fixed;           /* 화면에 고정 — #cv 흐름과 무관 */
-  bottom: 0;
-  left: 0; right: 0;
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
   height: var(--tab-h);
-  background: #1d1d1f;
+  background: rgba(17,17,24,.95);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  border-top: .5px solid var(--sep);
   z-index: 9000;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  /* 슬라이드 애니메이션 */
-  transform: translateY(0);
-  transition: transform .32s cubic-bezier(.25,.46,.45,.94);
-}
-/* 탭바 슬라이드 아웃 */
-#mob-tab.slid-out {
-  transform: translateY(110%);
 }
 .mti {
-  flex: 1;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 3px;
-  color: rgba(255,255,255,.4);
-  font-size: 10px; font-weight: 500;
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 3px;
+  color: var(--t3); font-size: 10px; font-weight: 500;
   cursor: pointer; border: none; background: none;
-  font-family: var(--font);
-  padding-top: 4px;
-  -webkit-tap-highlight-color: transparent;
+  font-family: var(--font); padding-top: 4px;
   transition: color .15s;
 }
-.mti.on { color: #ffffff; }
-.mti svg { width: 22px; height: 22px; stroke: currentColor; stroke-width: 1.6;
-  fill: none; stroke-linecap: round; stroke-linejoin: round; }
+.mti.on { color: var(--accent); }
+.mti svg { width: 21px; height: 21px; stroke: currentColor; stroke-width: 1.7; fill: none; stroke-linecap: round; stroke-linejoin: round; }
 
-/* 탭바 슬라이드 토글 버튼 */
-#tab-tog {
-  display: none;
-  position: fixed;
-  right: 14px;
-  bottom: calc(var(--tab-h) + 8px);
-  width: 36px; height: 36px;
-  background: #1d1d1f;
-  border: none; border-radius: 50%;
-  box-shadow: 0 2px 12px rgba(0,0,0,.4);
-  align-items: center; justify-content: center;
-  cursor: pointer; z-index: 9001;
-  transition: bottom .32s cubic-bezier(.25,.46,.45,.94);
-  -webkit-tap-highlight-color: transparent;
-}
-#tab-tog svg { width: 16px; height: 16px; stroke: #fff; stroke-width: 2.2;
-  fill: none; stroke-linecap: round; stroke-linejoin: round;
-  transition: transform .32s; }
-/* 탭바 숨김 시 토글 버튼 이동 */
-body.tab-out #tab-tog { bottom: 8px; }
-body.tab-out #tab-tog svg { transform: rotate(180deg); }
+/* ══════════════════════════════════════════════
+   공통 유틸
+══════════════════════════════════════════════ */
+.hid { display: none !important; }
+@keyframes sp { to { transform: rotate(360deg); } }
+.spn { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(91,110,245,.3); border-top-color: var(--accent); border-radius: 50%; animation: sp .6s linear infinite; vertical-align: middle; margin-right: 5px; }
 
-/* PWA 배너 */
-#pwa-banner {
-  display: none; position: fixed;
-  bottom: calc(var(--tab-h) + 10px); left: 12px; right: 12px;
-  background: #1d1d1f; border-radius: 16px; padding: 14px 16px;
-  z-index: 8999; box-shadow: 0 4px 24px rgba(0,0,0,.35);
-  align-items: center; gap: 12px;
-  animation: slideUp .3s var(--ease);
-}
-#pwa-banner.show { display: flex; }
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.pwa-ico{width:42px;height:42px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.pwa-ico svg{width:22px;height:22px;stroke:#1d1d1f;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
-.pwa-txt{flex:1;} .pwa-txt strong{font-size:14px;font-weight:700;color:#fff;display:block;margin-bottom:2px;}
-.pwa-txt span{font-size:12px;color:rgba(255,255,255,.5);}
-.pwa-ok{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);flex-shrink:0;}
-.pwa-x{width:28px;height:28px;background:rgba(255,255,255,.1);border:none;border-radius:50%;color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.pwa-x svg{width:13px;height:13px;stroke:currentColor;stroke-width:2.5;fill:none;}
-
-/* ══════════════════════════════════════
+/* ══════════════════════════════════════════════
    반응형
-══════════════════════════════════════ */
+══════════════════════════════════════════════ */
 @media screen and (max-width: 768px) {
-  #app  { max-width:100%; box-shadow:none; height:100dvh; }
-  #nav  { display:none !important; }
-  #sb   { display:none; position:fixed; top:0; left:0; right:0;
-          bottom:var(--tab-h); width:100%; z-index:8000;
-          background:var(--bg1); border-right:none; overflow-y:auto; }
-  #sb.mob-open { display:flex; flex-direction:column; }
-  #main { width:100%; height:calc(100dvh - var(--tab-h)); }
-
-  /* ────────────────────────────────────
-     핵심: 패널은 탭바 위 공간만 사용
-     입력창(.inbar)은 패널 맨 아래에 붙음
-     탭바(#mob-tab)는 패널 아래 별도 fixed
-  ──────────────────────────────────── */
-  .pn.on { height:calc(100dvh - var(--tab-h)); overflow:hidden; }
-  #cv {
-    height: calc(100dvh - var(--tab-h));
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  /* 메시지 영역: 남은 공간 전부 */
-  .ma { flex:1; min-height:0; }
-  /* 입력창: 패널 맨 아래, 탭바와 무관 */
-  .inbar {
-    flex-shrink: 0;
-    padding: 6px 8px 8px;
-    gap: 3px;
-    /* position:static — 패널 흐름 안에 있음 */
-  }
-
-  /* 탭바 표시 */
-  #mob-tab { display:flex; }
-  #tab-tog { display:flex; }
-
-  /* 탭바 숨김 시: 패널이 전체 화면 차지 */
-  body.tab-out #main  { height:100dvh !important; }
-  body.tab-out .pn.on { height:100dvh !important; }
-  body.tab-out #cv    { height:100dvh !important; }
-  body.tab-out #klv   { height:100dvh !important; }
-
-  /* 채팅 헤더 숨김 */
-  .ch { display:none !important; }
-  /* 버블 넓게 */
-  .mc { max-width:84%; }
-  /* K-Law 패딩 */
-  .vh  { padding:18px 16px 0; }
-  .sec { padding:14px 16px 0; }
-  .fs  { padding:14px 16px 20px; }
-  .vg  { padding:12px 16px; gap:6px; }
-  .rl  { padding:0 16px 14px; }
-  .pba { padding:0 16px 16px; }
-  .frl { padding:0 16px; }
-  .stc { padding:0 16px 80px; }
+  #app { max-width: 100%; box-shadow: none; height: 100dvh; }
+  #mob-tab { display: flex; }
+  #header .tab-btn { display: none; }
+  .kl-hero { padding: 18px 16px 14px; }
+  .kl-input-section { padding: 16px 16px 0; }
+  .kl-parsed { padding: 14px 16px 0; }
+  .kl-start-wrap { padding: 12px 16px 0; }
+  .kl-progress { padding: 14px 16px 0; }
+  .thinking-box { margin: 12px 16px 0; }
+  .kl-verdict { padding: 16px 16px 80px; }
+  #stv { padding: 18px 16px 80px; }
+  .parsed-grid { grid-template-columns: 1fr; }
+  .pn.on { height: calc(100dvh - var(--tab-h)); overflow: hidden; }
+  #klv { height: calc(100dvh - var(--tab-h)); }
+  #cv { height: calc(100dvh - var(--tab-h)); }
 }
-@media screen and (max-width:480px){
-  body { font-size:14px; }
-  .bb  { font-size:14px; padding:8px 12px; }
-  .mc  { max-width:88%; }
-  .sval{ font-size:20px; }
+
+@media screen and (max-width: 480px) {
+  .kl-hero-title { font-size: 18px; }
 }
 </style>
 </head>
 <body>
 <div id="app">
 
-<nav id="nav">
-  <div class="nav-logo"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M3 13h18"/></svg></div>
-  <button class="ni on" data-tab="chat" onclick="sw('chat')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">채팅</span></button>
-  <button class="ni" data-tab="klaw" onclick="sw('klaw')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="nl">K-Law</span></button>
-  <button class="ni" data-tab="pdv"  onclick="sw('pdv')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nl">PDV</span></button>
-  <button class="ni" data-tab="friends" onclick="sw('friends')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nl">친구</span></button>
-  <div class="nav-sp"></div>
-  <button class="ni" data-tab="settings" onclick="sw('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="nl">설정</span></button>
-  <button class="ni"><div style="width:30px;height:30px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;">나</div></button>
-</nav>
-
-<aside id="sb">
-  <div id="sb-chat">
-    <div class="sb-hd">
-      <div class="sb-title">채팅</div>
-      <div class="srch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="검색"></div>
+  <!-- ══════════════════════════════════════════
+       헤더 탭
+  ══════════════════════════════════════════ -->
+  <div id="header">
+    <div class="hd-logo">
+      <div class="hd-logo-mark">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span class="hd-logo-text">고팡</span>
     </div>
-    <div class="clist">
-      <div class="ci" onclick="selChat('ai','AI 비서','av-ai')"><div class="av av-ai"><svg style="width:15px;height:15px;stroke:#fff;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div><div class="ci-info"><div class="ci-name">AI 비서</div><div class="ci-prev">의심 메시지 차단됨</div></div><div class="ci-meta"><span class="ci-time">방금</span><div class="rdot rs3"></div></div></div>
-      <div class="ci on" onclick="selChat('kim','김임대인','av-k')"><div class="av av-k">김</div><div class="ci-info"><div class="ci-name">김임대인</div><div class="ci-prev">지금 당장 나가지 않으면...</div></div><div class="ci-meta"><span class="ci-time">14:32</span><div class="udot">2</div></div></div>
-      <div class="ci" onclick="selChat('team','팀 오픈채팅','av-t')"><div class="av av-t">팀</div><div class="ci-info"><div class="ci-name">팀 오픈채팅</div><div class="ci-prev">내일 계약 진행하면 될까요?</div></div><div class="ci-meta"><span class="ci-time">13:01</span></div></div>
-      <div class="ci" onclick="selChat('park','박거래처','av-p')"><div class="av av-p">박</div><div class="ci-info"><div class="ci-name">박거래처</div><div class="ci-prev">정상 전송 완료</div></div><div class="ci-meta"><span class="ci-time">어제</span></div></div>
-    </div>
-  </div>
-  <div id="sb-klaw" class="hid" style="padding:20px 16px;"><div class="sb-title" style="margin-bottom:14px;">사건 목록</div><div class="cc" onclick="loadCase('임대차 보증금 반환','주임법 §3·§6 적용 검토 중')"><div class="ccr"><span class="cct">임대차 보증금 반환</span><span class="chip chip-a">분석 중</span></div><div class="ccd">2026-05-19 · 김임대인</div></div><div class="cc" onclick="loadCase('계약서 불공정 조항','CV-1 불공정 조항 무효 인정')"><div class="ccr"><span class="cct">계약서 불공정 조항</span><span class="chip chip-d">완료</span></div><div class="ccd">2026-05-10 · 1,000원</div></div></div>
-  <div id="sb-pdv" class="hid" style="padding:20px 16px;"><div class="sb-title" style="margin-bottom:6px;">PDV 개인 금고</div><div style="font-size:12px;color:var(--t3);">OpenHash 무결성 보장</div></div>
-  <div id="sb-friends" class="hid" style="padding:20px 16px;"><div class="sb-title">친구</div></div>
-</aside>
-
-<main id="main">
-  <!-- 채팅 -->
-  <div id="cv" class="pn on">
-    <div class="ch"><div class="ch-av av-k" id="ch-av">김</div><div class="ch-info"><div class="ch-name" id="ch-name">김임대인</div><div class="ch-sub">AI 비서 감지 중 · PDV ON</div></div><div class="ch-acts"><button class="ibtn" onclick="sw('klaw')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button><button class="ibtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button></div></div>
-    <div class="ma" id="ma">
-      <div class="dlbl">2026년 5월 19일</div>
-      <div class="mr gap"><div class="mav av-k">김</div><div class="mc"><div class="msdr">김임대인</div><div class="bb bb-ot">안녕하세요. 계약 만료일이 다음달인데, 보증금 반환이 어렵다고 하시면 곤란합니다.</div><div class="gt gs0"><span class="d"></span>S0 안전 · PDV 기록 완료</div></div></div>
-      <div class="mr me gap"><div class="mc"><div class="bb bb-me">계약서 상 반환 기한이 명시되어 있습니다. 법적 기준을 확인해 주세요.</div><div class="mt" style="text-align:right">14:30</div></div></div>
-      <div class="mr gap"><div class="mav av-k">김</div><div class="mc"><div class="bb bb-ot">지금 당장 나가지 않으면 법적 조치를 취하겠습니다. 내일까지 짐 다 빼세요.</div><div class="mt">14:31</div></div></div>
-      <div class="aic"><div class="aic-hd"><div class="aic-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span class="aic-lbl">AI 비서</span><span class="aic-grade" style="background:rgba(255,107,53,.2);color:var(--orange);">S2 · CV-2</span></div><div class="aic-title">수신 메시지 위법 요소 감지</div><div class="aic-body">불법 명도 압박 표현 — 주택임대차보호법 위반 의심<br>위험 점수 <span class="aic-score">0.74</span> · PDV+OpenHash 기록 완료</div><div class="aic-acts"><button class="abtn" onclick="sw('klaw')">K-Law 접수</button><button class="abtn" onclick="sw('pdv')">PDV 확인</button><button class="abtn" onclick="sw('klaw')">내용증명</button></div><div class="aic-tags"><span class="atag">주임법 §6 갱신 거절 요건</span><span class="atag">보증금 반환 시기</span><span class="atag">유사 판례 3건</span></div></div>
-    </div>
-    <div class="anlz" id="anlz"><div class="pd"></div>AI 비서 분석 중</div>
-    <div class="attach-pv" id="attach-pv"><span class="ap-name" id="ap-name"></span><button class="ap-rm" onclick="clearAttach()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-    <input type="file" id="inp-file" accept="*/*" style="display:none" onchange="attachFile(this)">
-    <input type="file" id="inp-img" accept="image/*" capture="environment" style="display:none" onchange="attachFile(this)">
-    <!-- 입력창: #cv 플렉스의 마지막 자식, position:static -->
-    <div class="inbar">
-      <button class="mbtn" onclick="document.getElementById('inp-img').click()"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
-      <button class="mbtn" onclick="document.getElementById('inp-file').click()"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
-      <button class="mbtn" id="voice-btn" onclick="toggleVoice()"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
-      <div class="inw"><textarea id="mi" rows="1" placeholder="메시지 입력 — AI 비서 실시간 검증"></textarea></div>
-      <button class="sbtn" onclick="send()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
-    </div>
+    <button class="tab-btn on" data-tab="klaw" onclick="sw('klaw')">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      K-Law 판결 시뮬레이터
+    </button>
+    <button class="tab-btn" data-tab="chat" onclick="sw('chat')">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      채팅
+    </button>
+    <div class="hd-sp"></div>
+    <span class="ver-badge">{{VERSION}}</span>
+    <button class="tab-btn" data-tab="settings" onclick="sw('settings')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      설정
+    </button>
   </div>
 
-  <!-- K-Law -->
-  <div id="klv" class="pn">
-    <div class="vh"><h2>K-Law <small id="kvd" style="font-size:14px;font-weight:400;color:var(--t3);">{{VERSION}}</small></h2><p>AI 법률 분쟁 해결 · 10초 · 1,000원 · 99.9% 커버리지</p></div>
-    <div class="sec"><div class="seclbl">빠른 액션</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button class="kq-btn" onclick="sw('chat')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>내용증명</button>
-        <button class="kq-btn" onclick="sw('pdv')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PDV 증거</button>
-        <button class="kq-btn" onclick="srchP()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>판례 검색</button>
-        <button class="kq-btn" onclick="alert('변호사 매칭 준비 중')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>변호사 매칭</button>
+  <!-- ══════════════════════════════════════════
+       메인 영역
+  ══════════════════════════════════════════ -->
+  <main id="main" style="flex:1;overflow:hidden;display:flex;flex-direction:column;">
+
+    <!-- ── K-Law 판결 시뮬레이터 (기본 탭) ── -->
+    <div id="klv" class="pn on">
+
+      <!-- 히어로 -->
+      <div class="kl-hero">
+        <div class="kl-hero-title">⚖️ K-Law 가상 판결 시뮬레이터</div>
+        <div class="kl-hero-sub">
+          사건 개요를 입력하면 AI가 사건을 분석하고, {{VERSION}} 방법론에 따라<br>
+          단계별 가상 판결을 생성합니다. DeepSeek Reasoner 모델 사용.
+        </div>
+      </div>
+
+      <!-- 사건 개요 입력 -->
+      <div class="kl-input-section">
+        <div class="kl-section-label">사건 개요 입력</div>
+        <textarea
+          id="kl-summary"
+          class="kl-textarea"
+          placeholder="예: 임대인 A는 2024년 3월 임차인 B에게 보증금 5,000만 원에 주택을 임대하였으나, 계약 종료 후 보증금 반환을 거부하고 있습니다. 임차인은 확정일자와 전입신고를 모두 마쳤으며, 임대인은 근저당권 설정 사실을 고지하지 않았습니다..."
+          oninput="onSummaryInput()"
+        ></textarea>
+        <button class="kl-parse-btn" id="kl-parse-btn" onclick="parseSummary()" disabled>
+          <svg viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          AI로 사건 분석하기 (사건 유형 자동 판단)
+        </button>
+      </div>
+
+      <!-- 파싱 결과 섹션 -->
+      <div class="kl-parsed" id="kl-parsed">
+        <div class="kl-section-label">AI 사건 분석 결과</div>
+        <div class="parsed-grid">
+          <!-- 사건 유형 (AI 자동 결정) -->
+          <div class="parsed-card type parsed-card-full">
+            <div class="pc-label">사건 유형 (AI 자동 판단)</div>
+            <div class="pc-content" id="pc-type">
+              <div class="pc-loading"><div class="spn"></div> 분석 중...</div>
+            </div>
+          </div>
+          <!-- 원고 주장 -->
+          <div class="parsed-card plaintiff">
+            <div class="pc-label">원고의 주장</div>
+            <div class="pc-content" id="pc-plaintiff">
+              <div class="pc-loading"><div class="spn"></div></div>
+            </div>
+          </div>
+          <!-- 피고 주장 -->
+          <div class="parsed-card defendant">
+            <div class="pc-label">피고의 주장</div>
+            <div class="pc-content" id="pc-defendant">
+              <div class="pc-loading"><div class="spn"></div></div>
+            </div>
+          </div>
+          <!-- 다툼 없는 사실 -->
+          <div class="parsed-card undisputed">
+            <div class="pc-label">다툼이 없는 사실</div>
+            <div class="pc-content" id="pc-undisputed">
+              <div class="pc-loading"><div class="spn"></div></div>
+            </div>
+          </div>
+          <!-- 다툼의 요지 -->
+          <div class="parsed-card issue">
+            <div class="pc-label">다툼의 요지</div>
+            <div class="pc-content" id="pc-issue">
+              <div class="pc-loading"><div class="spn"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 판결 시작 버튼 -->
+      <div class="kl-start-wrap" id="kl-start-wrap">
+        <div class="kl-section-label">판결 시뮬레이션</div>
+        <button class="kl-start-btn" id="kl-start-btn" onclick="startVerdict()">
+          <svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          AI 판결 시뮬레이션 시작
+        </button>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="kl-progress" id="kl-progress">
+        <div class="kl-section-label">판결 생성 진행</div>
+        <div class="prog-title"><div class="dot"></div><span id="prog-current-msg">K-Law 방법론 초기화 중...</span></div>
+        <div class="prog-bar-wrap"><div class="prog-bar-fill" id="prog-bar"></div></div>
+        <div class="prog-steps" id="prog-steps"></div>
+      </div>
+
+      <!-- Thinking 박스 -->
+      <div class="thinking-box" id="thinking-box">
+        <div class="thinking-header" onclick="toggleThinking()">
+          <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+          ⚙️ AI 추론 과정 (Thinking)
+          <span id="thinking-token-count" style="margin-left:auto;font-size:10px;color:var(--t3);font-weight:400;"></span>
+        </div>
+        <div class="thinking-body" id="thinking-content"></div>
+      </div>
+
+      <!-- 판결문 출력 -->
+      <div class="kl-verdict" id="kl-verdict">
+        <div class="verdict-header">
+          <div class="verdict-title">⚖️ 가상 판결문</div>
+          <div class="verdict-stamp streaming" id="verdict-stamp">생성 중...</div>
+        </div>
+        <div id="verdict-body"></div>
+      </div>
+
+    </div><!-- /#klv -->
+
+    <!-- ── 채팅 패널 ── -->
+    <div id="cv" class="pn">
+      <div class="chat-header">
+        <div class="chat-av">AI</div>
+        <div>
+          <div class="chat-name">AI 비서</div>
+          <div class="chat-sub">K-Law 법률 분석 · PDV ON</div>
+        </div>
+      </div>
+      <div class="ma" id="chat-msgs">
+        <div class="mr gap">
+          <div class="mav" style="background:linear-gradient(135deg,var(--accent),var(--accent2))">AI</div>
+          <div class="mc">
+            <div class="bb bb-ot">안녕하세요! 법률 관련 궁금한 사항이 있으시면 편하게 말씀해 주세요. K-Law 판결 시뮬레이터는 상단 탭에서 이용하실 수 있습니다.</div>
+            <div class="mt">방금</div>
+          </div>
+        </div>
+      </div>
+      <div class="inbar">
+        <div class="inw">
+          <textarea id="mi" placeholder="메시지 입력..." rows="1"
+            oninput="autoResize(this)"
+            onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+        </div>
+        <button class="sbtn" onclick="sendChat()">
+          <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
       </div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 24px 0;">
-      <div class="sc"><div class="slbl">해결 시간</div><div class="sval">10<span class="su"> 초</span></div></div>
-      <div class="sc"><div class="slbl">기본 비용</div><div class="sval">1,000<span class="su"> 원</span></div></div>
-      <div class="sc"><div class="slbl">변호사 공증</div><div class="sval">5<span class="su"> 만원</span></div></div>
-      <div class="sc"><div class="slbl">커버리지</div><div class="sval">99.9<span class="su"> %</span></div></div>
-    </div>
-    <div class="sec"><div class="seclbl">진행 중인 사건</div>
-      <div class="cc" onclick="loadCase('임대차 보증금 반환','주택임대차보호법 §3·§6 적용 검토 중')"><div class="ccr"><span class="cct">임대차 보증금 반환</span><span class="chip chip-a">분석 중</span></div><div class="ccd">2026-05-19 · 김임대인</div></div>
-      <div class="cc"><div class="ccr"><span class="cct">계약서 불공정 조항</span><span class="chip chip-d">완료</span></div><div class="ccd">해결 2026-05-10 · 8초 · 1,000원</div></div>
-    </div>
-    <div class="fs">
-      <label class="fl" for="ct">사건 유형</label>
-      <select id="ct" class="fsel"><option>민사</option><option>형사</option><option>행정</option><option>가사</option><option>상사</option><option>임대차</option><option>노동</option></select>
-      <label class="fl" for="cs">사건 요약</label>
-      <textarea id="cs" class="fta" placeholder="발생 경위, 당사자 관계, 요구 사항을 입력하세요."></textarea>
-      <div class="brow"><button class="bp" id="vbtn" onclick="reqV()">K-Law 판결 요청</button><button class="bs" onclick="srchP()">판례 검색</button></div>
-      <div class="vc" id="vcard">
-        <div class="vver" id="vvlbl">K-Law v14.3</div>
-        <div class="vres" id="vmain"></div>
-        <div class="vreason" id="vreason"></div>
-        <div class="cw"><div class="cr"><span>신뢰도</span><span id="cpct">0%</span></div><div class="ct"><div class="cf" id="cbar" style="width:0%"></div></div></div>
-        <div class="hr"><div class="hd"></div><span id="vhash">OpenHash 검증 완료</span></div>
-        <div style="margin-top:5px;font-size:11px;color:var(--t3);" id="vmeta"></div>
+
+    <!-- ── 설정 패널 ── -->
+    <div id="stv" class="pn">
+      <div style="font-size:20px;font-weight:800;letter-spacing:-.3px;margin-bottom:22px;">설정</div>
+
+      <div class="st-section">
+        <div class="st-label">API 키</div>
+        <div class="st-card">
+          <div class="st-row">
+            <div class="st-row-icon icon-blue">
+              <svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg>
+            </div>
+            <div class="st-row-info">
+              <div class="st-row-title">DeepSeek API 키</div>
+              <div class="st-row-sub">판결 시뮬레이터 및 채팅에 사용</div>
+            </div>
+            <input type="password" class="st-input password" id="ak" placeholder="sk-..." autocomplete="off">
+          </div>
+        </div>
+        <button class="save-btn" onclick="saveSettings()">설정 저장</button>
+      </div>
+
+      <div class="st-section">
+        <div class="st-label">K-Law 정보</div>
+        <div class="st-card">
+          <div class="st-row">
+            <div class="st-row-icon icon-purple">
+              <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="st-row-info">
+              <div class="st-row-title">적용 방법론</div>
+              <div class="st-row-sub" id="ver-disp">{{VERSION}}</div>
+            </div>
+          </div>
+          <div class="st-row">
+            <div class="st-row-icon icon-green">
+              <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="st-row-info">
+              <div class="st-row-title">모델</div>
+              <div class="st-row-sub">deepseek-reasoner (판결) · deepseek-chat (분석)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="st-section">
+        <div class="st-label">서비스</div>
+        <div class="st-card">
+          <div class="st-row" style="cursor:pointer;" onclick="window.open('https://openhash.kr/law','_blank')">
+            <div class="st-row-info">
+              <div class="st-row-title">openhash.kr/law</div>
+              <div class="st-row-sub">K-Law 공식 체험 사이트</div>
+            </div>
+            <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:var(--t3);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </div>
+        </div>
       </div>
     </div>
+
+  </main><!-- /#main -->
+
+  <!-- 모바일 탭바 -->
+  <div id="mob-tab">
+    <button class="mti" data-tab="klaw" onclick="sw('klaw')">
+      <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      K-Law
+    </button>
+    <button class="mti" data-tab="chat" onclick="sw('chat')">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      채팅
+    </button>
+    <button class="mti" data-tab="settings" onclick="sw('settings')">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      설정
+    </button>
   </div>
 
-  <!-- PDV -->
-  <div id="pv" class="pn">
-    <div class="vh"><h2>PDV 개인 금고</h2><p>OpenHash 무결성 보장 · AES-256 · 5년 보존</p></div>
-    <div class="vg"><div class="vc2"><div class="vci">💰</div><div class="vcn">금융</div><div class="vcc">47건</div></div><div class="vc2"><div class="vci">🏥</div><div class="vcn">의료</div><div class="vcc">12건</div></div><div class="vc2"><div class="vci">🎓</div><div class="vcn">교육</div><div class="vcc">8건</div></div><div class="vc2"><div class="vci">🏛</div><div class="vcn">행정</div><div class="vcc">23건</div></div><div class="vc2"><div class="vci">🚗</div><div class="vcn">교통</div><div class="vcc">6건</div></div><div class="vc2"><div class="vci">📁</div><div class="vcn">일반</div><div class="vcc">134건</div></div></div>
-    <div class="sec" style="margin-bottom:0;"><div class="seclbl">최근 기록</div></div>
-    <div class="rl"><div class="ri"><div><div class="rit">임대차 계약서 · 김임대인</div><div class="ris">2026-05-19 14:28</div></div><span class="itag"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>무결성</span></div><div class="ri"><div><div class="rit">S2 경고 · 불법 명도 압박</div><div class="ris">2026-05-19 14:31</div></div><span class="itag"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>무결성</span></div><div class="ri"><div><div class="rit">내용증명 초안 · AI 생성</div><div class="ris">2026-05-19 14:34</div></div><span class="itag"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>무결성</span></div></div>
-    <div class="pba"><button class="bp" onclick="alert('증거 패키지 준비 중')">증거 제출</button><button class="bs" onclick="alert('기록 검색 준비 중')">기록 검색</button></div>
-  </div>
-
-  <!-- 친구 -->
-  <div id="frv" class="pn">
-    <div class="vh"><h2>친구</h2><p>법적 안전도 표시 · AI 비서 공유</p></div>
-    <div class="frl">
-      <div class="fri" onclick="selChat('kim','김임대인','av-k')"><div class="av av-k" style="width:40px;height:40px;font-size:14px;">김</div><div style="flex:1;"><div class="frn">김임대인</div><div class="frs">최근 S2 경고 이력</div></div><span class="fbdg bwn">S2 이력</span></div>
-      <div class="fri"><div class="av av-t" style="width:40px;height:40px;font-size:14px;">팀</div><div style="flex:1;"><div class="frn">팀 오픈채팅</div><div class="frs">안전</div></div><span class="fbdg bsf">안전</span></div>
-      <div class="fri"><div class="av av-p" style="width:40px;height:40px;font-size:14px;">박</div><div style="flex:1;"><div class="frn">박거래처</div><div class="frs">안전</div></div><span class="fbdg bsf">안전</span></div>
-    </div>
-  </div>
-
-  <!-- 설정 -->
-  <div id="stv" class="pn">
-    <div class="vh"><h2>설정</h2><p>AI 비서 · K-Law · API 구성</p></div>
-    <div class="stc">
-      <div class="stg"><div class="stgl">AI 비서</div>
-        <div class="str"><label>실시간 위법성 감지</label><label class="ios"><input type="checkbox" checked><div class="iotr"></div></label></div>
-        <div class="str"><label>PDV 자동 기록</label><label class="ios"><input type="checkbox" checked><div class="iotr"></div></label></div>
-      </div>
-      <div class="stg"><div class="stgl">API</div>
-        <div class="str"><label>DeepSeek API Key</label><input class="stin" type="password" id="akey" placeholder="sk-..." value="sk-e4a6f005aecf43d4aa60e77bb71de14c"></div>
-        <div class="str"><label>모델</label><input class="stin" type="text" id="mdl" value="deepseek-chat"></div>
-        <div class="str"><label>사용자 ID</label><input class="stin" type="text" id="uid" value="user_001"></div>
-      </div>
-      <div style="margin-bottom:22px;"><button class="bp" style="max-width:140px;" onclick="saveSt()">저장</button></div>
-      <div class="stg"><div class="stgl">K-Law 프롬프트</div>
-        <div class="vblk"><h4>K-Law <span id="kvs">{{VERSION}}</span></h4><p>프롬프트가 HTML에 내장되어 있습니다.<br><span class="mno">index.html 재배포 시 갱신</span></p></div>
-        <div style="margin-top:8px;"><span id="vres" style="font-size:12px;color:var(--t3);"></span></div>
-      </div>
-    </div>
-  </div>
-</main>
-</div>
-
-<!-- 탭바 토글 버튼 (모바일 전용) -->
-<button id="tab-tog" aria-label="탭바 숨기기/보이기">
-  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
-</button>
-
-<!-- 모바일 하단 탭바 (position:fixed, #cv와 무관) -->
-<div id="mob-tab">
-  <button class="mti on" data-mt="chat"     onclick="msw('chat')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>채팅</button>
-  <button class="mti"    data-mt="klaw"     onclick="msw('klaw')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>K-Law</button>
-  <button class="mti"    data-mt="pdv"      onclick="msw('pdv')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PDV</button>
-  <button class="mti"    data-mt="friends"  onclick="msw('friends')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>친구</button>
-  <button class="mti"    data-mt="settings" onclick="msw('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>설정</button>
-</div>
-
-<!-- PWA 배너 -->
-<div id="pwa-banner">
-  <div class="pwa-ico"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M3 13h18"/></svg></div>
-  <div class="pwa-txt"><strong>고팡 앱 설치</strong><span>홈 화면 추가 → 주소창 없이 실행</span></div>
-  <button class="pwa-ok" id="pwa-ok">설치</button>
-  <button class="pwa-x"  id="pwa-x"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-</div>
+</div><!-- /#app -->
 
 <script>
+/* ══════════════════════════════════════════════
+   K-Law 프롬프트 (build.py가 주입)
+══════════════════════════════════════════════ */
 const KLAW_PROMPT = {{KLAW_PROMPT}};
 const IDDM_PROMPT = {{IDDM_PROMPT}};
 
-const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const now = () => new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
-let tab='chat', chat='kim';
-const uid = () => document.getElementById('uid')?.value||'user_001';
+/* ══════════════════════════════════════════════
+   상태
+══════════════════════════════════════════════ */
+let currentCase = { summary: '', type: '', plaintiff: '', defendant: '', undisputed: '', issue: '' };
+let parseInProgress = false;
+let verdictInProgress = false;
+const TABS = ['klaw', 'chat', 'settings'];
+const TAB_IDS = { klaw: 'klv', chat: 'cv', settings: 'stv' };
 
-/* ── 패널 전환 ── */
-function sw(t){
-  tab=t;
-  document.querySelectorAll('.ni[data-tab]').forEach(e=>e.classList.toggle('on',e.dataset.tab===t));
-  ['chat','klaw','pdv','friends'].forEach(x=>{const e=document.getElementById('sb-'+x);if(e)e.classList.toggle('hid',x!==t);});
-  [['cv','chat'],['klv','klaw'],['pv','pdv'],['frv','friends'],['stv','settings']].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.classList.toggle('on',v===t);});
-}
-function msw(t){
-  document.getElementById('sb').classList.remove('mob-open');
-  sw(t);
-  document.querySelectorAll('.mti').forEach(e=>e.classList.toggle('on',e.dataset.mt===t));
-}
-function selChat(id,name,av){
-  chat=id;
-  document.querySelectorAll('.ci').forEach(e=>e.classList.remove('on'));
-  event?.currentTarget?.classList.add('on');
-  if(name){ document.getElementById('ch-name').textContent=name; const a=document.getElementById('ch-av'); a.textContent=name[0]; a.className='ch-av '+av; }
-  if(window.innerWidth<=768) document.getElementById('sb').classList.remove('mob-open');
-  sw('chat');
+/* ══════════════════════════════════════════════
+   초기화
+══════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
+  sw('klaw');
+});
+
+function loadSettings() {
+  const ak = localStorage.getItem('gopang_ak') || '';
+  if (ak) document.getElementById('ak').value = ak;
 }
 
-/* ── DeepSeek 직접 호출 ── */
-function getKey(){ return document.getElementById('akey')?.value?.trim()||''; }
-async function callDeepSeek(system,user,maxTok=1500){
-  const key=getKey();
-  if(!key) return JSON.stringify({error:'설정 탭에서 API 키를 입력하세요.'});
-  const r=await fetch('https://api.deepseek.com/v1/chat/completions',{
-    method:'POST',
-    headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-    body:JSON.stringify({model:document.getElementById('mdl')?.value||'deepseek-chat',max_tokens:maxTok,
-      messages:[{role:'system',content:system},{role:'user',content:user}]})
+function saveSettings() {
+  const ak = document.getElementById('ak').value.trim();
+  if (ak) localStorage.setItem('gopang_ak', ak);
+  showToast('설정이 저장됐습니다.');
+}
+
+function getApiKey() {
+  return document.getElementById('ak').value.trim() || localStorage.getItem('gopang_ak') || '';
+}
+
+/* ══════════════════════════════════════════════
+   탭 전환
+══════════════════════════════════════════════ */
+function sw(tab) {
+  TABS.forEach(t => {
+    const pn = document.getElementById(TAB_IDS[t]);
+    if (pn) pn.classList.toggle('on', t === tab);
+    document.querySelectorAll(`[data-tab="${t}"]`).forEach(el => el.classList.toggle('on', t === tab));
   });
-  if(!r.ok) throw new Error('API '+r.status);
-  const d=await r.json();
-  return d.choices?.[0]?.message?.content||'';
 }
 
-/* ── OpenHash (SHA-256 순수 JS) ── */
-async function sha256(msg){
-  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-async function openhash(data){
-  const h1=await sha256(data); const h2=await sha256(h1);
-  const v=parseInt(h2.slice(0,8),16)%1000;
-  return {hash:h2,layer:v<600?'L1':v<900?'L2':v<990?'L3':'L4'};
+/* ══════════════════════════════════════════════
+   사건 개요 입력 감지
+══════════════════════════════════════════════ */
+function onSummaryInput() {
+  const val = document.getElementById('kl-summary').value.trim();
+  document.getElementById('kl-parse-btn').disabled = val.length < 20;
 }
 
-/* ── PDV (localStorage) ── */
-function pdvSave(uid,content,grade){
-  const k='pdv_'+uid; const r=JSON.parse(localStorage.getItem(k)||'[]');
-  r.push({id:r.length+1,ts:new Date().toISOString(),grade,content:content.slice(0,100)});
-  localStorage.setItem(k,JSON.stringify(r.slice(-200)));
+/* ══════════════════════════════════════════════
+   DeepSeek API 호출 (non-streaming)
+══════════════════════════════════════════════ */
+async function callDS(system, user, maxTokens = 800, model = 'deepseek-chat') {
+  const ak = getApiKey();
+  if (!ak) throw new Error('API 키를 설정에서 입력해 주세요.');
+  const r = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ak}` },
+    body: JSON.stringify({
+      model,
+      max_tokens: maxTokens,
+      messages: [{ role: 'system', content: system }, { role: 'user', content: user }]
+    })
+  });
+  if (!r.ok) throw new Error(`API 오류: ${r.status}`);
+  const d = await r.json();
+  return d.choices?.[0]?.message?.content || '';
 }
 
-/* ── IDDM 분석 ── */
-async function iddmAnalyze(senderId,receiverId,content){
-  const user=`발신자:${senderId}
-수신자:${receiverId}
-메시지:${content}
+/* ══════════════════════════════════════════════
+   사건 개요 파싱 (섹션별 자동 추출)
+══════════════════════════════════════════════ */
+async function parseSummary() {
+  if (parseInProgress) return;
+  const summary = document.getElementById('kl-summary').value.trim();
+  if (summary.length < 20) return;
 
-IDDM Phase 0~6으로 분석하고 JSON만 출력하세요.`;
-  try{
-    const raw=await callDeepSeek(IDDM_PROMPT,user,600);
-    const d=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    pdvSave(senderId,content,d.grade||'S0');
-    return d;
-  }catch(e){ return {grade:'S0',risk_score:0,violations:[]}; }
-}
+  parseInProgress = true;
+  currentCase.summary = summary;
+  const btn = document.getElementById('kl-parse-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spn"></div> AI 분석 중...';
 
-/* ── K-Law 판결 ── */
-async function klawVerdict(userId,summary,caseType){
-  const user=`사건 유형:${caseType}
-사건 요약:
-${summary}
+  // 파싱 섹션 표시
+  document.getElementById('kl-parsed').classList.add('on');
+  document.getElementById('kl-start-wrap').classList.remove('on');
 
-K-Law 가상 판결을 JSON만 출력하세요.`;
-  try{
-    const raw=await callDeepSeek(KLAW_PROMPT,user,2000);
-    const d=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    const anchor=await openhash(summary+Date.now());
-    d.openhash=anchor; return d;
-  }catch(e){
-    return {verdict:{main:'원고 일부 승소',reasoning:'임차인은 계약 만료 1개월 전 갱신 거절 통보를 받았으나, 임대인이 주택임대차보호법 §3 소정의 갱신 거절 사유를 입증하지 못하였으므로 계약갱신요구권이 인정됩니다.'},
-      confidence:{score:0.82,basis:'유사 판례 3건'},axioms_applied:['A2','A4','A9'],
-      openhash:{hash:'demo_'+Math.random().toString(36).slice(2),layer:'L1'},version:'v14.3'};
-  }
-}
-
-/* ── 메시지 전송 ── */
-async function send(){
-  const inp=document.getElementById('mi');
-  const txt=inp.value.trim(); if(!txt) return;
-  inp.value=''; inp.style.height='';
-  const a=document.getElementById('ma');
-  const row=document.createElement('div'); row.className='mr me gap';
-  row.innerHTML=`<div class="mc"><div class="bb bb-me">${esc(txt)}</div><div class="mt" style="text-align:right">${now()}</div><div id="gtl" style="display:none;align-self:flex-end;"></div></div>`;
-  a.appendChild(row); a.scrollTop=a.scrollHeight;
-  const al=document.getElementById('anlz'); al.style.display='flex';
-  const d=await iddmAnalyze(uid(),chat,txt);
-  al.style.display='none';
-  const el=document.getElementById('gtl');
-  if(el){const m={S0:['gs0','S0 안전'],S1:['gs1','S1 주의'],S2:['gs2','S2 경고'],S3:['gs3','S3 긴급']};const[c,l]=m[d.grade]||m.S0;el.className=`gt ${c}`;el.innerHTML=`<span class="d"></span>${l}`;el.style.display='inline-flex';}
-  if(['S2','S3'].includes(d.grade)){
-    const aic=document.createElement('div'); aic.className='aic';
-    aic.innerHTML=`<div class="aic-hd"><div class="aic-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span class="aic-lbl">AI 비서</span><span class="aic-grade" style="background:rgba(255,59,48,.15);color:var(--red);">${d.grade}·${d.cv_code||'CV-?'}</span></div><div class="aic-title">위법 요소 감지</div><div class="aic-body">위험 점수 <span class="aic-score">${(d.risk_score||0).toFixed(2)}</span></div><div class="aic-acts"><button class="abtn" onclick="sw('klaw')">K-Law 접수</button><button class="abtn" onclick="sw('pdv')">PDV 확인</button></div>`;
-    a.appendChild(aic); a.scrollTop=a.scrollHeight;
-  }
-}
-
-/* ── K-Law 판결 렌더 ── */
-async function reqV(){
-  const s=document.getElementById('cs').value.trim(); if(!s)return;
-  const btn=document.getElementById('vbtn');
-  btn.innerHTML='<span class="spn"></span>분석 중'; btn.disabled=true;
-  document.getElementById('vcard').classList.remove('on');
-  const d=await klawVerdict(uid(),s,document.getElementById('ct').value);
-  const v=d.verdict||{};
-  document.getElementById('vmain').textContent=v.main||'';
-  document.getElementById('vreason').textContent=v.reasoning||'';
-  const p=Math.round((d.confidence?.score||0)*100);
-  document.getElementById('cpct').textContent=p+'%';
-  setTimeout(()=>document.getElementById('cbar').style.width=p+'%',80);
-  document.getElementById('vhash').textContent=(d.openhash?.hash||'').slice(0,22)+'... · '+(d.openhash?.layer||'L1');
-  document.getElementById('vmeta').textContent='신뢰도: '+(d.confidence?.basis||'')+' · 공리: '+(d.axioms_applied||[]).join(', ');
-  document.getElementById('vvlbl').textContent='K-Law '+(d.version||'v14.3');
-  document.getElementById('vcard').classList.add('on');
-  btn.innerHTML='K-Law 판결 요청'; btn.disabled=false;
-}
-
-/* ── 기타 ── */
-function loadCase(t,d){document.getElementById('cs').value=t+'\n'+d;sw('klaw');}
-function srchP(){const q=document.getElementById('cs').value.trim();if(!q)return alert('사건 요약을 먼저 입력하세요.');alert('판례 검색 준비 중');}
-function saveSt(){localStorage.setItem('gak',document.getElementById('akey').value);const b=event.currentTarget;b.textContent='저장됨';setTimeout(()=>b.textContent='저장',1400);}
-let pF=null;
-function attachFile(input){const f=input.files[0];if(!f)return;pF=f;const pv=document.getElementById('attach-pv');document.getElementById('ap-name').textContent='📎 '+f.name;pv.classList.add('show');input.value='';}
-function clearAttach(){pF=null;document.getElementById('attach-pv').classList.remove('show');}
-let recog=null,recOn=false;
-function toggleVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){alert('Chrome에서 음성 입력을 지원합니다.');return;}const btn=document.getElementById('voice-btn');if(recOn){recog&&recog.stop();recOn=false;btn.classList.remove('recording');return;}recog=new SR();recog.lang='ko-KR';recog.continuous=false;recog.interimResults=true;recog.onstart=()=>{recOn=true;btn.classList.add('recording');};recog.onresult=e=>{document.getElementById('mi').value=Array.from(e.results).map(r=>r[0].transcript).join('');};recog.onend=()=>{recOn=false;btn.classList.remove('recording');};recog.start();}
-document.getElementById('mi').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
-document.getElementById('mi').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
-
-/* ══════════════════════════════════════
-   탭바 슬라이드 — position:fixed 독립 레이어
-   입력창(.inbar)과 완전히 분리됨
-══════════════════════════════════════ */
-(function(){
-  var TAB  = document.getElementById('mob-tab');
-  var TOG  = document.getElementById('tab-tog');
-  var BODY = document.body;
-  if(!TAB || !TOG) return;
-
-  var hidden=false, touchY0=0, touchT0=0;
-
-  function setTab(hide){
-    hidden=hide;
-    /* CSS transition이 translateY를 처리 */
-    if(hide){ TAB.classList.add('slid-out');    BODY.classList.add('tab-out'); }
-    else    { TAB.classList.remove('slid-out'); BODY.classList.remove('tab-out'); }
-    /* 토글 버튼 화살표 */
-    var poly=TOG.querySelector('polyline');
-    if(poly) poly.setAttribute('points', hide ? '6 9 12 15 18 9' : '18 15 12 9 6 15');
-  }
-
-  /* 버튼 탭 */
-  TOG.addEventListener('click', function(e){
-    e.preventDefault(); e.stopPropagation(); setTab(!hidden);
+  // 로딩 상태 초기화
+  ['type','plaintiff','defendant','undisputed','issue'].forEach(id => {
+    document.getElementById(`pc-${id}`).innerHTML = '<div class="pc-loading"><div class="spn"></div></div>';
   });
 
-  /* 스와이프: 메시지 영역과 K-Law/PDV 스크롤 영역에서만 감지
-     입력창(.inbar)에서는 절대 감지 안 함 */
-  ['ma','klv','pv','frv','stv'].forEach(function(id){
-    var el=document.getElementById(id); if(!el) return;
-    el.addEventListener('touchstart',function(e){touchY0=e.touches[0].clientY;touchT0=Date.now();},{passive:true});
-    el.addEventListener('touchend',function(e){
-      var dy=e.changedTouches[0].clientY-touchY0;
-      var dt=Date.now()-touchT0;
-      if(dt<400 && Math.abs(dy)>50) setTab(dy<0);
-    },{passive:true});
-  });
-})();
+  try {
+    const system = `당신은 한국 법률 사건 분석 전문 AI입니다.
+주어진 사건 개요에서 다음 항목을 JSON으로 추출하세요.
+반드시 JSON만 출력하고, 코드블록이나 설명은 절대 포함하지 마세요.
 
-/* ── PWA 배너 ── */
-(function(){
-  if(sessionStorage.getItem('pwa-x')) return;
-  var banner=document.getElementById('pwa-banner');
-  var okBtn=document.getElementById('pwa-ok');
-  var xBtn=document.getElementById('pwa-x');
-  if(!banner) return;
-  var prompt=null;
-  var isStandalone=function(){return window.matchMedia('(display-mode:standalone)').matches||navigator.standalone===true;};
-  if(isStandalone()) return;
-  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();prompt=e;setTimeout(function(){banner.classList.add('show');},1500);});
-  setTimeout(function(){if(!prompt&&!isStandalone()){if(okBtn)okBtn.textContent='설치 안내';banner.classList.add('show');}},3000);
-  if(okBtn) okBtn.addEventListener('click',async function(){if(prompt){banner.classList.remove('show');prompt.prompt();await prompt.userChoice;prompt=null;}else{alert('홈 화면에 추가:\n\n📱 Android Chrome: 우상단 ⋮ → 앱 설치\n🍎 iPhone Safari: 하단 □↑ → 홈 화면에 추가');}});
-  if(xBtn) xBtn.addEventListener('click',function(){banner.classList.remove('show');sessionStorage.setItem('pwa-x','1');});
-  window.addEventListener('appinstalled',function(){banner.classList.remove('show');});
-})();
+{
+  "case_type": "민사|형사|행정|노동|가사|특허|기타 중 하나만",
+  "plaintiff_claim": "원고(또는 고소인)의 핵심 주장 (2-4문장)",
+  "defendant_claim": "피고(또는 피고소인)의 예상 주장 또는 반론 (2-4문장)",
+  "undisputed_facts": "양측이 다투지 않는 객관적 사실들 (번호 목록 가능)",
+  "key_issue": "본 사건의 핵심 법적 쟁점 (1-2문장)"
+}`;
 
-/* ── Service Worker ── */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}
+    const raw = await callDS(system, `[사건 개요]\n${summary}`, 1200);
+    let parsed;
+    try {
+      const clean = raw.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      throw new Error('AI 응답 파싱 실패. 다시 시도해 주세요.');
+    }
 
-/* 초기 K-Law 버전 표시 */
-document.getElementById('vres').textContent='K-Law v14.3 · '+KLAW_PROMPT.length+'자';
-['kvd','kvs'].forEach(function(id){var e=document.getElementById(id);if(e)e.textContent='v14.3';});
+    currentCase.type = parsed.case_type || '민사';
+    currentCase.plaintiff = parsed.plaintiff_claim || '';
+    currentCase.defendant = parsed.defendant_claim || '';
+    currentCase.undisputed = parsed.undisputed_facts || '';
+    currentCase.issue = parsed.key_issue || '';
+
+    // 결과 표시
+    const typeCls = `type-badge type-${currentCase.type}`;
+    document.getElementById('pc-type').innerHTML =
+      `<span class="${typeCls}">⚖️ ${currentCase.type}</span>
+       <span style="font-size:11px;color:var(--t3);margin-left:8px;">AI가 자동으로 판단한 사건 유형</span>`;
+
+    document.getElementById('pc-plaintiff').textContent = currentCase.plaintiff;
+    document.getElementById('pc-defendant').textContent = currentCase.defendant;
+    document.getElementById('pc-undisputed').textContent = currentCase.undisputed;
+    document.getElementById('pc-issue').textContent = currentCase.issue;
+
+    // 판결 시작 버튼 표시
+    document.getElementById('kl-start-wrap').classList.add('on');
+
+  } catch(e) {
+    document.getElementById('pc-type').textContent = `오류: ${e.message}`;
+    ['plaintiff','defendant','undisputed','issue'].forEach(id => {
+      document.getElementById(`pc-${id}`).textContent = '';
+    });
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> 다시 분석하기';
+  parseInProgress = false;
+
+  // 스크롤 내리기
+  setTimeout(() => {
+    document.getElementById('kl-start-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 200);
+}
+
+/* ══════════════════════════════════════════════
+   판결 시뮬레이션 실행
+══════════════════════════════════════════════ */
+const PROGRESS_STEPS = [
+  { id: 'ps0',  label: 'K-Law 방법론 초기화',           sub: 'STEP 0 준비 및 공리 적용' },
+  { id: 'ps1',  label: '원고의 최강 법리를 구성 중...',  sub: '원고 관점 최대 유리 논거 탐색' },
+  { id: 'ps2',  label: '피고의 최강 법리를 구성 중...',  sub: '피고 관점 최대 유리 논거 탐색' },
+  { id: 'ps3',  label: '헌법·법률·판례를 검색 중...',    sub: '관련 법령 및 대법원 판례 대조' },
+  { id: 'ps4',  label: '증거 및 사실관계 평가 중...',    sub: 'STEP A: 사실 인정 및 쟁점 정리' },
+  { id: 'ps5',  label: '법리 적용 및 위법성 판단 중...', sub: 'STEP B: 법적 판단 및 논리 구성' },
+  { id: 'ps6',  label: '주문 및 이유 작성 중...',        sub: 'STEP C: 판결 주문 도출' },
+  { id: 'ps7',  label: '신뢰도 분석 및 최종 검토',       sub: '공리 G·S·STEP B-6-π 적용 완료' },
+];
+
+function renderProgressSteps() {
+  const container = document.getElementById('prog-steps');
+  container.innerHTML = PROGRESS_STEPS.map(s => `
+    <div class="prog-step" id="${s.id}">
+      <div class="step-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg></div>
+      <div class="step-text">
+        ${s.label}
+        <div class="step-subtext">${s.sub}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setStep(idx, state) {
+  const step = document.getElementById(PROGRESS_STEPS[idx].id);
+  if (!step) return;
+  step.className = 'prog-step' + (state === 'active' ? ' active' : state === 'done' ? ' done' : state === 'error' ? ' error' : '');
+  let icon = '';
+  if (state === 'active') icon = '<div class="step-spinner"></div>';
+  else if (state === 'done') icon = '<span class="step-check">✓</span>';
+  else if (state === 'error') icon = '✗';
+  else icon = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/></svg>`;
+  step.querySelector('.step-icon').innerHTML = icon;
+  document.getElementById('prog-current-msg').textContent = PROGRESS_STEPS[idx].label;
+  // 프로그레스 바
+  const pct = state === 'done' ? ((idx + 1) / PROGRESS_STEPS.length * 100) : (idx / PROGRESS_STEPS.length * 100);
+  document.getElementById('prog-bar').style.width = pct + '%';
+}
+
+async function startVerdict() {
+  if (verdictInProgress) return;
+  if (!currentCase.summary) { showToast('먼저 사건 개요를 분석해 주세요.'); return; }
+  const ak = getApiKey();
+  if (!ak) { sw('settings'); showToast('설정에서 DeepSeek API 키를 입력해 주세요.'); return; }
+
+  verdictInProgress = true;
+  const startBtn = document.getElementById('kl-start-btn');
+  startBtn.disabled = true;
+  startBtn.innerHTML = '<div class="spn"></div> 판결 생성 중...';
+
+  // 프로그레스 표시
+  const progEl = document.getElementById('kl-progress');
+  progEl.classList.add('on');
+  renderProgressSteps();
+
+  // Thinking 박스 초기화
+  const thinkingBox = document.getElementById('thinking-box');
+  thinkingBox.classList.add('on');
+  thinkingBox.classList.remove('collapsed');
+  document.getElementById('thinking-content').textContent = '';
+  document.getElementById('thinking-token-count').textContent = '';
+
+  // 판결문 박스 초기화
+  const verdictEl = document.getElementById('kl-verdict');
+  verdictEl.classList.add('on');
+  document.getElementById('verdict-body').innerHTML = '';
+  document.getElementById('verdict-stamp').textContent = '생성 중...';
+  document.getElementById('verdict-stamp').className = 'verdict-stamp streaming';
+
+  // 스크롤
+  setTimeout(() => progEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+
+  try {
+    // 단계별 진행 시뮬레이션 + 실제 스트리밍
+    for (let i = 0; i < PROGRESS_STEPS.length - 1; i++) {
+      setStep(i, 'active');
+      await sleep(600 + Math.random() * 400);
+      if (i < PROGRESS_STEPS.length - 2) setStep(i, 'done');
+    }
+
+    // 실제 DeepSeek-Reasoner 스트리밍 시작
+    const userPrompt = `[사건 유형: ${currentCase.type}]
+
+[사건 개요]
+${currentCase.summary}
+
+[AI 분석 결과]
+- 원고의 주장: ${currentCase.plaintiff}
+- 피고의 주장: ${currentCase.defendant}
+- 다툼 없는 사실: ${currentCase.undisputed}
+- 핵심 쟁점: ${currentCase.issue}
+
+위 사건에 대해 K-Law 방법론에 따라 다음 순서로 가상 판결문을 작성하십시오:
+
+[STEP-0] 사건 개요 및 쟁점 정리
+[STEP-A] 사실인정 (다툼 없는 사실, 인정 사실)
+[STEP-B] 법리 판단 (관련 법령, 판례 적용, 위법성 검토)
+[STEP-C] 결론 및 주문 (판결 주문, 이유 요지, 신뢰도 점수)
+
+각 STEP 시작 시 반드시 해당 STEP 태그를 첫 줄에 출력하십시오.`;
+
+    const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ak}` },
+      body: JSON.stringify({
+        model: 'deepseek-reasoner',
+        max_tokens: 4000,
+        stream: true,
+        messages: [
+          { role: 'system', content: KLAW_PROMPT },
+          { role: 'user', content: userPrompt }
+        ]
+      })
+    });
+
+    if (!response.ok) throw new Error(`API 오류: ${response.status}`);
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let thinkingText = '';
+    let verdictText = '';
+    let thinkingTokens = 0;
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      const lines = decoder.decode(value).split('\n').filter(l => l.startsWith('data: '));
+      for (const line of lines) {
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          const json = JSON.parse(data);
+          const delta = json.choices?.[0]?.delta;
+          if (delta?.reasoning_content) {
+            thinkingText += delta.reasoning_content;
+            const tc = document.getElementById('thinking-content');
+            tc.textContent = thinkingText;
+            tc.scrollTop = tc.scrollHeight;
+            thinkingTokens++;
+            if (thinkingTokens % 20 === 0)
+              document.getElementById('thinking-token-count').textContent = `${thinkingTokens} tokens`;
+          }
+          if (delta?.content) {
+            verdictText += delta.content;
+            renderVerdict(verdictText);
+          }
+        } catch(e) { /* skip */ }
+      }
+    }
+
+    // 완료
+    setStep(PROGRESS_STEPS.length - 1, 'done');
+    document.getElementById('prog-current-msg').textContent = '판결 생성 완료 ✓';
+    document.getElementById('prog-bar').style.width = '100%';
+    document.getElementById('verdict-stamp').textContent = '생성 완료';
+    document.getElementById('verdict-stamp').className = 'verdict-stamp';
+    thinkingBox.classList.add('collapsed');
+
+    // 판결문으로 스크롤
+    setTimeout(() => {
+      document.getElementById('kl-verdict').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 400);
+
+  } catch(e) {
+    setStep(PROGRESS_STEPS.length - 1, 'error');
+    document.getElementById('verdict-body').innerHTML =
+      `<div style="color:var(--red);font-size:13px;padding:10px;">오류: ${e.message}</div>`;
+    showToast(e.message);
+  }
+
+  verdictInProgress = false;
+  startBtn.disabled = false;
+  startBtn.innerHTML = '<svg viewBox="0 0 24 24" style="width:17px;height:17px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;"><polygon points="5 3 19 12 5 21 5 3"/></svg> 다시 시뮬레이션';
+}
+
+/* ── 판결문 렌더링 ── */
+function renderVerdict(text) {
+  const body = document.getElementById('verdict-body');
+  // STEP 태그로 분리
+  const parts = text.split(/(\[STEP-[^\]]+\])/g);
+  let html = '';
+  let currentStep = null;
+  let currentContent = '';
+  const stepMeta = {
+    '0': { label: 'STEP 0', title: '사건 개요 및 쟁점 정리', tag: '준비' },
+    'A': { label: 'STEP A', title: '사실인정', tag: '사실관계' },
+    'B': { label: 'STEP B', title: '법리 판단', tag: '법률 적용' },
+    'C': { label: 'STEP C', title: '결론 및 주문', tag: '판결' },
+  };
+
+  const cards = [];
+  let pendingStep = null;
+  let pendingContent = '';
+
+  for (const part of parts) {
+    const m = part.match(/\[STEP-([0-9A-Z]+)\]/);
+    if (m) {
+      if (pendingStep !== null) cards.push({ step: pendingStep, content: pendingContent.trim() });
+      pendingStep = m[1];
+      pendingContent = '';
+    } else {
+      pendingContent += part;
+    }
+  }
+  if (pendingStep !== null) cards.push({ step: pendingStep, content: pendingContent.trim() });
+  if (cards.length === 0 && text.trim()) cards.push({ step: null, content: text });
+
+  html = cards.map((c, idx) => {
+    const meta = c.step ? (stepMeta[c.step] || { label: `STEP ${c.step}`, title: '', tag: '' }) : { label: '', title: '판결문', tag: '' };
+    const isC = c.step === 'C';
+    if (isC) return renderOrderCard(c.content);
+    return `<div class="step-card">
+      <div class="step-card-header" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'':'none'">
+        <div class="step-num">${c.step || idx + 1}</div>
+        <div class="step-card-title">${meta.title}</div>
+        <span class="step-card-tag">${meta.tag}</span>
+      </div>
+      <div class="step-card-body">${escHtml(c.content)}</div>
+    </div>`;
+  }).join('');
+
+  body.innerHTML = html;
+}
+
+function renderOrderCard(content) {
+  // 신뢰도 점수 추출 시도
+  const confMatch = content.match(/신뢰도[:\s]*(\d+)[%점]/);
+  const conf = confMatch ? parseInt(confMatch[1]) : 0;
+  const resultMatch = content.match(/주문\s*[:\n]([^\n]{1,60})/);
+  const result = resultMatch ? resultMatch[1].trim() : '';
+
+  let resultCls = 'partial';
+  if (/원고 승|인용|인정/.test(result)) resultCls = 'win';
+  else if (/기각|원고 패|피고 승/.test(result)) resultCls = 'lose';
+
+  return `<div class="order-card">
+    <div class="order-title">⚖️ 판결 주문</div>
+    ${result ? `<div class="order-result ${resultCls}">${result}</div>` : ''}
+    <div class="order-body">${escHtml(content)}</div>
+    ${conf > 0 ? `<div class="conf-wrap">
+      <div class="conf-label"><span>K-Law 신뢰도</span><span>${conf}%</span></div>
+      <div class="conf-bar"><div class="conf-fill" style="width:${conf}%"></div></div>
+    </div>` : ''}
+  </div>
+  <div class="step-card">
+    <div class="step-card-header">
+      <div class="step-num">C</div>
+      <div class="step-card-title">결론 및 주문</div>
+      <span class="step-card-tag">판결</span>
+    </div>
+    <div class="step-card-body">${escHtml(content)}</div>
+  </div>`;
+}
+
+/* ── Thinking 토글 ── */
+function toggleThinking() {
+  document.getElementById('thinking-box').classList.toggle('collapsed');
+}
+
+/* ══════════════════════════════════════════════
+   채팅
+══════════════════════════════════════════════ */
+let chatHistory = [];
+
+async function sendChat() {
+  const input = document.getElementById('mi');
+  const text = input.value.trim();
+  if (!text) return;
+  const ak = getApiKey();
+  if (!ak) { sw('settings'); showToast('API 키를 먼저 입력해 주세요.'); return; }
+
+  input.value = '';
+  autoResize(input);
+
+  const msgs = document.getElementById('chat-msgs');
+  // 내 메시지
+  msgs.innerHTML += `<div class="mr me gap"><div class="mc"><div class="bb bb-me">${escHtml(text)}</div><div class="mt">방금</div></div></div>`;
+  // AI 타이핑
+  const tmpId = 'tmp-' + Date.now();
+  msgs.innerHTML += `<div class="mr gap" id="${tmpId}"><div class="mav" style="background:linear-gradient(135deg,var(--accent),var(--accent2))">AI</div><div class="mc"><div class="bb bb-ot"><div class="spn"></div></div></div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  chatHistory.push({ role: 'user', content: text });
+
+  try {
+    const res = await callDS(
+      '당신은 K-Law 법률 AI 비서입니다. 한국 법률에 대해 친절하고 전문적으로 답변하세요.',
+      text, 800
+    );
+    chatHistory.push({ role: 'assistant', content: res });
+    const el = document.getElementById(tmpId);
+    if (el) el.querySelector('.bb').innerHTML = escHtml(res).replace(/\n/g,'<br>');
+  } catch(e) {
+    const el = document.getElementById(tmpId);
+    if (el) el.querySelector('.bb').innerHTML = `<span style="color:var(--red)">오류: ${e.message}</span>`;
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* ══════════════════════════════════════════════
+   유틸
+══════════════════════════════════════════════ */
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+let toastTimer;
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--bg3);color:var(--t1);padding:9px 16px;border-radius:100px;font-size:13px;font-weight:500;z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,.3);pointer-events:none;transition:opacity .3s;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { t.style.opacity = '0'; }, 2800);
+}
 </script>
 </body>
 </html>
