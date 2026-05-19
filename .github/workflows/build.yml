@@ -1,39 +1,32 @@
-name: K-Law 프롬프트 빌드 및 배포
+name: K-Law Build
 
 on:
   push:
-    branches: [main]
-    paths:
-      # 아래 파일이 변경될 때만 빌드 실행
-      - 'klaw/prompts/system_prompt.txt'
-      - 'klaw/iddm/IDDM_full.txt'
-      - 'build.py'
-      - 'src/index_template.html'
-
-  # 수동 실행도 가능
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
-      - name: 저장소 체크아웃
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Python 설정
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: 빌드 실행 (index.html 생성)
+      - name: Run build script
         run: python3 build.py
 
-      - name: 빌드 결과 커밋
+      - name: Commit and push
         run: |
-          git config user.name  "github-actions[bot]"
+          git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add index.html
-          # 변경사항 없으면 커밋 스킵
-          git diff --staged --quiet || git commit -m "build: K-Law 프롬프트 업데이트 자동 반영"
+          git diff --staged --quiet || git commit -m "build: auto update index.html"
           git push
