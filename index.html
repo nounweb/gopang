@@ -1171,7 +1171,7 @@ function onSummaryInput(el) {
 async function callDS(system, user, maxTokens=800, model='deepseek-chat') {
   const ak = getAK();
   if (!ak) { sw('settings'); throw new Error('API 키를 설정에서 입력해 주세요.'); }
-  const r = await fetch('https://api.deepseek.com/v1/chat/completions', {
+  const r = await fetch('https://gopang-proxy.tensor-city.workers.dev', {
     method: 'POST',
     headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${ak}` },
     body: JSON.stringify({ model, max_tokens: maxTokens,
@@ -1346,7 +1346,7 @@ K-Law 방법론에 따라 다음 순서로 가상 판결문을 작성하십시�
 [STEP-B] 법리 판단
 [STEP-C] 주문 및 결론 (신뢰도 점수 포함)`;
 
-    const resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    const resp = await fetch('https://gopang-proxy.tensor-city.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type':'application/json', 'Authorization':`Bearer ${ak}` },
       body: JSON.stringify({
