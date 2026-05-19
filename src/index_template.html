@@ -1120,12 +1120,16 @@ textarea { resize: none; }
 
 </div><!-- /#app -->
 
+<!-- ━━━ 프롬프트 데이터 (build.py 주입 — JS 파서 우회) ━━━ -->
+<script id="klaw-data" type="application/json">{{KLAW_JSON}}</script>
+
 <script>
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   빌드 주입 (build.py)
+   프롬프트 로드 (JSON 태그에서 읽기)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-const KLAW_PROMPT = {{KLAW_PROMPT}};
-const IDDM_PROMPT = {{IDDM_PROMPT}};
+const _d = JSON.parse(document.getElementById('klaw-data').textContent);
+const KLAW_PROMPT = _d.klaw;
+const IDDM_PROMPT = _d.iddm;
 
 /* ━━━ 상태 ━━━ */
 const TABS    = ['klaw','chat','settings'];
