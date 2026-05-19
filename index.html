@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#1d1d1f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="고팡">
+<link rel="manifest" href="./manifest.json">
+<title>고팡 — K-Law 통합 예방 법학 메신저</title>
+<style>
+/* ── 변수 ── */
+:root{
+  --bg0:#f5f5f7;--bg1:#fff;--bg2:#f5f5f7;--bg3:#e8e8ed;--bg4:#d1d1d6;
+  --t1:#1d1d1f;--t2:#6e6e73;--t3:#aeaeb2;--t4:#c7c7cc;
+  --blue:#007aff;--blue-bg:rgba(0,122,255,.09);
+  --green:#34c759;--amber:#ff9f0a;--orange:#ff6b35;--red:#ff3b30;
+  --sep:rgba(0,0,0,.08);--sep2:rgba(0,0,0,.14);
+  --r6:6px;--r10:10px;--r14:14px;--r18:18px;--r22:22px;
+  --nav:62px;--side:272px;--tab-h:54px;
+  --font:-apple-system,"Helvetica Neue",sans-serif;
+  --mono:"SF Mono","Menlo",monospace;
+  --ease:cubic-bezier(.25,.46,.45,.94);
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg0:#000;--bg1:#1c1c1e;--bg2:#2c2c2e;--bg3:#3a3a3c;--bg4:#48484a;
+  --t1:#f5f5f7;--t2:#98989d;--t3:#636366;--t4:#48484a;
+  --sep:rgba(255,255,255,.08);--sep2:rgba(255,255,255,.14);
+  --blue-bg:rgba(0,122,255,.16);
+}}
+
+/* ── 리셋 ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font);font-size:15px;background:var(--bg0);color:var(--t1);-webkit-font-smoothing:antialiased;}
+button{font-family:var(--font);cursor:pointer;border:none;background:none;color:inherit;}
+input,textarea,select{font-family:var(--font);}
+
+/* ── 앱 ── */
+#app{display:flex;height:100vh;max-width:1040px;margin:0 auto;
+  background:var(--bg1);box-shadow:0 0 0 .5px var(--sep2),0 8px 40px rgba(0,0,0,.12);}
+
+/* ── 데스크탑 네비 ── */
+#nav{width:var(--nav);background:var(--bg2);border-right:.5px solid var(--sep);
+  display:flex;flex-direction:column;align-items:center;padding:14px 0 18px;gap:2px;flex-shrink:0;}
+.nav-logo{width:34px;height:34px;background:var(--t1);border-radius:var(--r10);
+  display:flex;align-items:center;justify-content:center;margin-bottom:18px;flex-shrink:0;}
+.nav-logo svg{width:17px;height:17px;stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.ni{width:44px;height:44px;border-radius:var(--r10);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:3px;color:var(--t3);
+  transition:background .14s,color .14s;position:relative;}
+.ni:hover{background:var(--bg3);color:var(--t1);}
+.ni.on{background:var(--bg1);color:var(--blue);box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.ni svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.6;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.nl{font-size:9px;font-weight:500;letter-spacing:.02em;}
+.nav-sp{flex:1;}
+
+/* ── 사이드바 ── */
+#sb{width:var(--side);background:var(--bg2);border-right:.5px solid var(--sep);
+  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
+.sb-hd{padding:20px 16px 12px;}
+.sb-title{font-size:20px;font-weight:700;letter-spacing:-.3px;margin-bottom:12px;}
+.srch{display:flex;align-items:center;gap:7px;background:var(--bg3);border-radius:var(--r10);padding:7px 10px;}
+.srch svg{width:15px;height:15px;stroke:var(--t3);stroke-width:2;fill:none;stroke-linecap:round;flex-shrink:0;}
+.srch input{border:none;background:transparent;font-size:14px;color:var(--t1);width:100%;outline:none;}
+.srch input::placeholder{color:var(--t3);}
+.clist{overflow-y:auto;flex:1;}
+.clist::-webkit-scrollbar{width:0;}
+.ci{display:flex;align-items:center;gap:11px;padding:10px 16px;cursor:pointer;transition:background .1s;position:relative;}
+.ci::after{content:'';position:absolute;bottom:0;left:67px;right:0;height:.5px;background:var(--sep);}
+.ci:hover{background:var(--bg3);}
+.ci.on{background:var(--blue-bg);}
+.ci.on::after{display:none;}
+.av{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:15px;color:#fff!important;flex-shrink:0;}
+.av-ai{background:var(--t1);}
+.av-k{background:#6e6e73;}
+.av-t{background:#8e8e93;}
+.av-p{background:#48484a;}
+.ci-info{flex:1;min-width:0;}
+.ci-name{font-size:15px;font-weight:600;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1);}
+.ci-prev{font-size:13px;color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;}
+.ci-meta{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.ci-time{font-size:12px;color:var(--t3);}
+.udot{width:18px;height:18px;background:var(--blue);border-radius:9px;font-size:11px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:center;}
+.rdot{width:7px;height:7px;border-radius:50%;}
+.rs3{background:var(--red);}
+
+/* ── 메인 ── */
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.pn{display:none;}
+.pn.on{display:flex;}
+
+/* ── 채팅 ── */
+#cv{flex-direction:column;height:100%;}
+.ch{display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;
+  border-bottom:.5px solid var(--sep);background:var(--bg1);flex-shrink:0;}
+.ch-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;color:#fff!important;flex-shrink:0;}
+.ch-info{flex:1;}
+.ch-name{font-size:15px;font-weight:600;letter-spacing:-.2px;}
+.ch-sub{font-size:11px;color:var(--t2);margin-top:1px;}
+.ch-acts{display:flex;gap:2px;}
+.ibtn{width:32px;height:32px;border-radius:var(--r6);display:flex;align-items:center;justify-content:center;
+  color:var(--t2);transition:background .1s;}
+.ibtn:hover{background:var(--bg2);}
+.ibtn svg{width:17px;height:17px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.ma{flex:1;overflow-y:auto;padding:18px 16px;background:var(--bg2);display:flex;flex-direction:column;gap:2px;}
+.ma::-webkit-scrollbar{width:0;}
+.dlbl{text-align:center;font-size:12px;font-weight:500;color:var(--t3);margin:6px 0 14px;letter-spacing:.02em;}
+.mr{display:flex;align-items:flex-end;gap:6px;}
+.mr.me{flex-direction:row-reverse;}
+.mr+.mr{margin-top:2px;}
+.mr.gap{margin-top:12px;}
+.mav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:600;color:#fff!important;flex-shrink:0;align-self:flex-end;}
+.mc{display:flex;flex-direction:column;max-width:68%;gap:1px;}
+.mr.me .mc{align-items:flex-end;}
+.msdr{font-size:11px;color:var(--t3);margin-bottom:3px;padding:0 14px;}
+.bb{padding:9px 14px;border-radius:18px;font-size:15px;line-height:1.5;word-break:break-word;}
+.bb-me{background:var(--blue);color:#fff;border-bottom-right-radius:4px;}
+.bb-ot{background:var(--bg1);color:var(--t1);border-bottom-left-radius:4px;box-shadow:0 1px 2px rgba(0,0,0,.06);}
+.mt{font-size:10px;color:var(--t3);padding:0 4px;margin-top:2px;}
+.gt{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:100px;
+  font-size:11px;font-weight:500;margin-top:4px;}
+.gt .d{width:5px;height:5px;border-radius:50%;}
+.gs0{color:var(--green);background:rgba(52,199,89,.08);}
+.gs0 .d{background:var(--green);}
+.gs2{color:var(--orange);background:rgba(255,107,53,.08);}
+.gs2 .d{background:var(--orange);}
+.gs3{color:var(--red);background:rgba(255,59,48,.08);}
+.gs3 .d{background:var(--red);}
+.aic{background:var(--t1);border-radius:var(--r18);padding:15px 17px;max-width:84%;margin:8px 0 4px;}
+.aic-hd{display:flex;align-items:center;gap:8px;margin-bottom:9px;}
+.aic-ico{width:26px;height:26px;border-radius:50%;background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;}
+.aic-ico svg{width:13px;height:13px;stroke:#fff;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.aic-lbl{font-size:11px;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.05em;text-transform:uppercase;}
+.aic-grade{margin-left:auto;font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;}
+.aic-title{font-size:14px;font-weight:600;color:#fff;margin-bottom:5px;}
+.aic-body{font-size:13px;color:rgba(255,255,255,.5);line-height:1.6;}
+.aic-score{font-weight:600;color:rgba(255,255,255,.85);}
+.aic-acts{display:flex;gap:6px;margin-top:11px;flex-wrap:wrap;}
+.abtn{background:rgba(255,255,255,.09);color:rgba(255,255,255,.8);border-radius:var(--r6);
+  padding:6px 12px;font-size:12px;font-weight:500;transition:background .1s;}
+.abtn:hover,.abtn:active{background:rgba(255,255,255,.16);}
+.aic-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px;}
+.atag{background:rgba(255,255,255,.05);color:rgba(255,255,255,.35);border-radius:100px;padding:2px 8px;font-size:11px;}
+.anlz{display:none;align-items:center;gap:8px;padding:5px 16px;font-size:12px;color:var(--t3);background:var(--bg2);}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.25}}
+.pd{width:6px;height:6px;border-radius:50%;background:var(--blue);animation:p .9s ease-in-out infinite;}
+
+/* ── 입력창 ── */
+.inbar{display:flex;align-items:flex-end;gap:4px;padding:8px 12px 12px;background:var(--bg1);border-top:.5px solid var(--sep);}
+.mbtn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  color:var(--t3);flex-shrink:0;transition:color .1s,background .1s;-webkit-tap-highlight-color:transparent;}
+.mbtn:hover,.mbtn:active{color:var(--blue);background:var(--blue-bg);}
+.mbtn svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.mbtn.recording{color:var(--red);}
+.inw{flex:1;background:var(--bg2);border-radius:var(--r22);border:.5px solid var(--sep2);
+  display:flex;align-items:flex-end;padding:8px 12px;transition:border-color .15s;}
+.inw:focus-within{border-color:var(--blue);}
+#mi{flex:1;border:none;background:transparent;font-size:15px;color:var(--t1);
+  outline:none;resize:none;min-height:22px;max-height:120px;line-height:1.5;}
+#mi::placeholder{color:var(--t3);}
+.sbtn{width:34px;height:34px;background:var(--blue);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s,transform .08s;-webkit-tap-highlight-color:transparent;}
+.sbtn:hover{background:#0066d6;}
+.sbtn:active{transform:scale(.9);}
+.sbtn svg{width:14px;height:14px;stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.attach-preview{display:none;align-items:center;gap:8px;padding:8px 14px;
+  background:var(--bg2);border-top:.5px solid var(--sep);font-size:13px;color:var(--t1);}
+.attach-preview.show{display:flex;}
+.ap-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ap-rm{width:24px;height:24px;border-radius:50%;background:var(--bg3);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ap-rm svg{width:12px;height:12px;stroke:var(--t2);stroke-width:2;fill:none;}
+
+/* ── K-Law ── */
+#klv{flex-direction:column;height:100%;overflow-y:auto;}
+#klv::-webkit-scrollbar{width:0;}
+.vh{padding:26px 24px 0;position:sticky;top:0;background:var(--bg1);z-index:1;}
+.vh h2{font-size:27px;font-weight:700;letter-spacing:-.5px;}
+.vh p{font-size:13px;color:var(--t2);margin-top:4px;padding-bottom:16px;border-bottom:.5px solid var(--sep);}
+.sc{background:var(--bg2);border-radius:var(--r14);padding:15px 17px;border:.5px solid var(--sep);}
+.slbl{font-size:12px;color:var(--t2);font-weight:500;}
+.sval{font-size:25px;font-weight:700;letter-spacing:-.5px;margin-top:4px;}
+.su{font-size:13px;font-weight:400;color:var(--t2);}
+.sec{padding:22px 24px 0;}
+.seclbl{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:9px;}
+.cc{background:var(--bg2);border:.5px solid var(--sep);border-radius:var(--r14);padding:13px 15px;margin-bottom:8px;cursor:pointer;transition:background .1s;}
+.cc:hover,.cc:active{background:var(--bg3);}
+.ccr{display:flex;align-items:center;justify-content:space-between;}
+.cct{font-size:14px;font-weight:600;letter-spacing:-.1px;}
+.chip{font-size:11px;font-weight:500;padding:2px 9px;border-radius:100px;}
+.chip-a{background:rgba(0,122,255,.1);color:var(--blue);}
+.chip-d{background:rgba(52,199,89,.1);color:var(--green);}
+.ccd{font-size:12px;color:var(--t2);margin-top:5px;line-height:1.5;}
+.kq-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  background:var(--bg2);border:.5px solid var(--sep2);border-radius:var(--r14);
+  padding:14px 10px;font-size:12px;font-weight:500;color:var(--t1);cursor:pointer;
+  transition:background .1s;-webkit-tap-highlight-color:transparent;}
+.kq-btn:hover,.kq-btn:active{background:var(--bg3);}
+.kq-btn svg{width:20px;height:20px;stroke:var(--blue);stroke-width:1.7;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.fs{padding:22px 24px;border-top:.5px solid var(--sep);margin-top:8px;}
+.fl{font-size:12px;font-weight:600;color:var(--t2);margin-bottom:7px;display:block;text-transform:uppercase;letter-spacing:.05em;}
+.fsel,.fta{width:100%;background:var(--bg2);border:.5px solid var(--sep2);border-radius:var(--r10);
+  padding:10px 13px;font-size:14px;color:var(--t1);outline:none;margin-bottom:13px;transition:border-color .15s;-webkit-appearance:none;}
+.fsel:focus,.fta:focus{border-color:var(--blue);}
+.fta{resize:vertical;min-height:88px;line-height:1.55;}
+.brow{display:flex;gap:8px;}
+.bp{flex:1;background:var(--t1);color:var(--bg1);border-radius:var(--r10);padding:11px;font-size:14px;font-weight:600;transition:opacity .15s;}
+.bp:hover{opacity:.82;}
+.bp:disabled{opacity:.38;}
+.bs{flex:1;background:var(--bg2);color:var(--t1);border-radius:var(--r10);padding:11px;font-size:14px;font-weight:500;border:.5px solid var(--sep2);transition:background .1s;}
+.bs:hover,.bs:active{background:var(--bg3);}
+.vc{background:var(--bg2);border:.5px solid var(--sep2);border-radius:var(--r14);padding:17px 19px;margin-top:13px;display:none;}
+.vc.on{display:block;animation:fu .22s var(--ease);}
+@keyframes fu{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.vver{font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
+.vres{font-size:17px;font-weight:700;letter-spacing:-.2px;margin-bottom:9px;}
+.vreason{font-size:13px;color:var(--t2);line-height:1.7;}
+.cw{margin-top:11px;}
+.cr{display:flex;justify-content:space-between;font-size:12px;color:var(--t3);margin-bottom:5px;}
+.ct{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden;}
+.cf{height:100%;background:var(--t1);border-radius:2px;transition:width .55s var(--ease);}
+.hr{display:flex;align-items:center;gap:5px;margin-top:9px;font-size:11px;color:var(--t3);font-family:var(--mono);}
+.hd{width:6px;height:6px;border-radius:50%;background:var(--green);}
+
+/* ── PDV ── */
+#pv{flex-direction:column;height:100%;overflow-y:auto;}
+#pv::-webkit-scrollbar{width:0;}
+.vg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px 24px;}
+.vc2{background:var(--bg2);border-radius:var(--r14);padding:14px 10px;cursor:pointer;border:.5px solid var(--sep);transition:background .1s;text-align:center;}
+.vc2:hover,.vc2:active{background:var(--bg3);}
+.vci{font-size:22px;margin-bottom:5px;}
+.vcn{font-size:12px;font-weight:600;}
+.vcc{font-size:11px;color:var(--t3);margin-top:2px;}
+.rl{padding:0 24px 16px;}
+.ri{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:.5px solid var(--sep);}
+.rit{font-size:14px;font-weight:500;}
+.ris{font-size:11px;color:var(--t3);margin-top:3px;}
+.itag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;color:var(--green);}
+.itag svg{width:12px;height:12px;stroke:var(--green);stroke-width:2.5;fill:none;}
+.pba{display:flex;gap:8px;padding:0 24px 28px;}
+
+/* ── 친구 ── */
+#frv{flex-direction:column;height:100%;overflow-y:auto;}
+#frv::-webkit-scrollbar{width:0;}
+.frl{padding:0 24px;}
+.fri{display:flex;align-items:center;gap:13px;padding:12px 0;border-bottom:.5px solid var(--sep);cursor:pointer;}
+.frn{font-size:15px;font-weight:500;}
+.frs{font-size:12px;color:var(--t3);margin-top:2px;}
+.fbdg{font-size:11px;font-weight:500;padding:2px 8px;border-radius:100px;}
+.bsf{background:rgba(52,199,89,.1);color:var(--green);}
+.bwn{background:rgba(255,59,48,.08);color:var(--red);}
+
+/* ── 설정 ── */
+#stv{flex-direction:column;height:100%;overflow-y:auto;}
+#stv::-webkit-scrollbar{width:0;}
+.stc{padding:0 24px 40px;}
+.stg{margin-bottom:26px;}
+.stgl{font-size:13px;font-weight:600;color:var(--t2);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;}
+.str{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--bg2);border-bottom:.5px solid var(--sep);}
+.str:first-of-type{border-radius:var(--r10) var(--r10) 0 0;}
+.str:last-of-type{border-radius:0 0 var(--r10) var(--r10);border-bottom:none;}
+.str:only-of-type{border-radius:var(--r10);border-bottom:none;}
+.str label{font-size:14px;color:var(--t1);}
+.ios{position:relative;display:inline-block;width:50px;height:30px;}
+.ios input{display:none;}
+.iotr{position:absolute;inset:0;background:var(--bg4);border-radius:15px;cursor:pointer;transition:background .24s;}
+.iotr::after{content:'';position:absolute;left:3px;top:3px;width:24px;height:24px;background:#fff;border-radius:50%;transition:transform .24s;box-shadow:0 1px 4px rgba(0,0,0,.22);}
+.ios input:checked+.iotr{background:var(--blue);}
+.ios input:checked+.iotr::after{transform:translateX(20px);}
+.stin{background:transparent;border:none;text-align:right;font-size:14px;color:var(--t2);outline:none;max-width:200px;}
+.vblk{background:var(--bg2);border:.5px solid var(--sep);border-radius:var(--r10);padding:14px 16px;}
+.vblk h4{font-size:14px;font-weight:600;margin-bottom:4px;}
+.vblk p{font-size:12px;color:var(--t2);line-height:1.6;}
+.mno{font-family:var(--mono);font-size:11px;color:var(--t3);}
+@keyframes sp{to{transform:rotate(360deg)}}
+.spn{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px;}
+.hid{display:none!important;}
+
+/* ══════════════════════════════════════
+   모바일 하단 탭바
+══════════════════════════════════════ */
+#mob-tab{
+  display: none;  /* 데스크탑 숨김 */
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--tab-h);
+  background: #1d1d1f;
+  z-index: 9000;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  /* 슬라이드 애니메이션 */
+  transform: translateY(0);
+  transition: transform .32s cubic-bezier(.25,.46,.45,.94);
+}
+#mob-tab.#mob-tab.slid-out { transform: translateY(110%) !important; }
+
+.mti{
+  flex: 1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px;
+  color: rgba(255,255,255,.4);
+  font-size: 10px; font-weight: 500;
+  letter-spacing: .02em;
+  cursor: pointer;
+  border: none; background: none;
+  font-family: var(--font);
+  padding-top: 4px;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .15s;
+}
+.mti.on { color: #ffffff; }
+.mti svg {
+  width: 22px; height: 22px;
+  stroke: currentColor; stroke-width: 1.6;
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* 탭바 슬라이드 시 메인 영역 높이 보상 */
+body.tab-out #main,
+body.tab-out .pn.on,
+body.tab-out #cv,
+body.tab-out #klv { height: 100dvh !important; }
+
+/* 탭바 토글 버튼 */
+#tab-tog{
+  display: none;
+  position: fixed;
+  right: 14px;
+  bottom: calc(var(--tab-h) + 10px);
+  width: 36px; height: 36px;
+  background: #1d1d1f;
+  border: none; border-radius: 50%;
+  box-shadow: 0 2px 12px rgba(0,0,0,.4);
+  align-items: center; justify-content: center;
+  cursor: pointer; z-index: 9001;
+  transition: bottom .32s cubic-bezier(.25,.46,.45,.94);
+  -webkit-tap-highlight-color: transparent;
+}
+#tab-tog svg{
+  width: 16px; height: 16px;
+  stroke: #fff; stroke-width: 2.2;
+  fill: none; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform .32s;
+}
+body.tab-out #tab-tog { bottom: 14px; }
+body.tab-out #tab-tog svg { transform: rotate(180deg); }
+
+/* ══════════════════════════════════════
+   PWA 설치 배너
+══════════════════════════════════════ */
+#pwa-banner{
+  display: none;
+  position: fixed;
+  bottom: calc(var(--tab-h) + 10px);
+  left: 12px; right: 12px;
+  background: #1d1d1f;
+  border-radius: 16px;
+  padding: 14px 16px;
+  z-index: 8999;
+  box-shadow: 0 4px 24px rgba(0,0,0,.35);
+  align-items: center; gap: 12px;
+  animation: slideUp .3s var(--ease);
+}
+#pwa-banner.show { display: flex; }
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.pwa-ico{width:42px;height:42px;background:#fff;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pwa-ico svg{width:22px;height:22px;stroke:#1d1d1f;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round;}
+.pwa-txt{flex:1;}
+.pwa-txt strong{font-size:14px;font-weight:700;color:#fff;display:block;margin-bottom:2px;}
+.pwa-txt span{font-size:12px;color:rgba(255,255,255,.5);}
+.pwa-ok{background:var(--blue);color:#fff;border:none;border-radius:10px;padding:8px 15px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.pwa-ok:active{opacity:.8;}
+.pwa-x{width:28px;height:28px;background:rgba(255,255,255,.1);border:none;border-radius:50%;color:rgba(255,255,255,.6);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.pwa-x svg{width:13px;height:13px;stroke:currentColor;stroke-width:2.5;fill:none;}
+
+/* ══════════════════════════════════════
+   반응형
+══════════════════════════════════════ */
+@media screen and (max-width: 768px) {
+  #app { max-width: 100%; box-shadow: none; height: 100dvh; }
+  #nav { display: none !important; }
+  #sb  { display: none; position: fixed; top: 0; left: 0; right: 0;
+         bottom: var(--tab-h); width: 100%; z-index: 8000;
+         background: var(--bg1); border-right: none; overflow-y: auto; }
+  #sb.mob-open { display: flex; flex-direction: column; }
+  #main { width: 100%; height: calc(100dvh - var(--tab-h)); }
+  .pn.on { height: calc(100dvh - var(--tab-h)); overflow: hidden; }
+  #cv { height: calc(100dvh - var(--tab-h)); }
+  #klv{ height: calc(100dvh - var(--tab-h)); }
+  /* 채팅 헤더 숨김 (발화자 이름으로 대체) */
+  .ch { display: none !important; }
+  /* 탭바 표시 */
+  #mob-tab { display: flex; }
+  #tab-tog { display: flex; }
+  /* 버블 넓게 */
+  .mc { max-width: 84%; }
+  /* K-Law 패딩 */
+  .vh  { padding: 18px 16px 0; }
+  .sec { padding: 14px 16px 0; }
+  .fs  { padding: 14px 16px 20px; }
+  .vg  { padding: 12px 16px; gap: 6px; }
+  .rl  { padding: 0 16px 14px; }
+  .pba { padding: 0 16px 16px; }
+  .frl { padding: 0 16px; }
+  .stc { padding: 0 16px 80px; }
+  /* 입력창 */
+  .inbar { padding: 6px 8px 8px; gap: 3px; }
+}
+@media screen and (max-width: 480px) {
+  body { font-size: 14px; }
+  .bb  { font-size: 14px; padding: 8px 12px; }
+  .mc  { max-width: 88%; }
+  .vg  { grid-template-columns: repeat(3,1fr); gap: 5px; }
+  .sval{ font-size: 20px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- 데스크탑 네비 -->
+<nav id="nav">
+  <div class="nav-logo"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M3 13h18"/></svg></div>
+  <button class="ni on" data-tab="chat" onclick="sw('chat')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span class="nl">채팅</span></button>
+  <button class="ni" data-tab="klaw" onclick="sw('klaw')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg><span class="nl">K-Law</span></button>
+  <button class="ni" data-tab="pdv"  onclick="sw('pdv')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span class="nl">PDV</span></button>
+  <button class="ni" data-tab="friends" onclick="sw('friends')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span class="nl">친구</span></button>
+  <div class="nav-sp"></div>
+  <button class="ni" data-tab="settings" onclick="sw('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span class="nl">설정</span></button>
+  <button class="ni"><div style="width:30px;height:30px;border-radius:50%;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;">나</div></button>
+</nav>
+
+<!-- 사이드바 -->
+<aside id="sb">
+  <div id="sb-chat">
+    <div class="sb-hd">
+      <div class="sb-title">채팅</div>
+      <div class="srch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg><input type="text" placeholder="검색"></div>
+    </div>
+    <div class="clist">
+      <div class="ci" onclick="selChat('ai','AI 비서','av-ai')">
+        <div class="av av-ai"><svg style="width:15px;height:15px;stroke:#fff;stroke-width:2;fill:none;" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <div class="ci-info"><div class="ci-name">AI 비서</div><div class="ci-prev">의심 메시지 차단됨</div></div>
+        <div class="ci-meta"><span class="ci-time">방금</span><div class="rdot rs3"></div></div>
+      </div>
+      <div class="ci on" onclick="selChat('kim','김임대인','av-k')">
+        <div class="av av-k">김</div>
+        <div class="ci-info"><div class="ci-name">김임대인</div><div class="ci-prev">지금 당장 나가지 않으면...</div></div>
+        <div class="ci-meta"><span class="ci-time">14:32</span><div class="udot">2</div></div>
+      </div>
+      <div class="ci" onclick="selChat('team','팀 오픈채팅','av-t')">
+        <div class="av av-t">팀</div>
+        <div class="ci-info"><div class="ci-name">팀 오픈채팅</div><div class="ci-prev">내일 계약 진행하면 될까요?</div></div>
+        <div class="ci-meta"><span class="ci-time">13:01</span></div>
+      </div>
+      <div class="ci" onclick="selChat('park','박거래처','av-p')">
+        <div class="av av-p">박</div>
+        <div class="ci-info"><div class="ci-name">박거래처</div><div class="ci-prev">정상 전송 완료</div></div>
+        <div class="ci-meta"><span class="ci-time">어제</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="sb-klaw" class="hid" style="padding:20px 16px;">
+    <div class="sb-title" style="margin-bottom:14px;">사건 목록</div>
+    <div class="cc" onclick="loadCase('임대차 보증금 반환','주임법 §3·§6 적용 검토 중')"><div class="ccr"><span class="cct">임대차 보증금 반환</span><span class="chip chip-a">분석 중</span></div><div class="ccd">2026-05-19 · 김임대인</div></div>
+    <div class="cc" onclick="loadCase('계약서 불공정 조항','CV-1 불공정 조항 무효 인정')"><div class="ccr"><span class="cct">계약서 불공정 조항</span><span class="chip chip-d">완료</span></div><div class="ccd">2026-05-10 · 1,000원</div></div>
+  </div>
+  <div id="sb-pdv" class="hid" style="padding:20px 16px;"><div class="sb-title" style="margin-bottom:6px;">PDV 개인 금고</div><div style="font-size:12px;color:var(--t3);">OpenHash 무결성 보장</div></div>
+  <div id="sb-friends" class="hid" style="padding:20px 16px;"><div class="sb-title">친구</div></div>
+</aside>
+
+<!-- 메인 -->
+<main id="main">
+
+  <!-- 채팅 패널 -->
+  <div id="cv" class="pn on">
+    <div class="ch">
+      <div class="ch-av av-k" id="ch-av">김</div>
+      <div class="ch-info"><div class="ch-name" id="ch-name">김임대인</div><div class="ch-sub">AI 비서 감지 중 · PDV ON</div></div>
+      <div class="ch-acts">
+        <button class="ibtn" onclick="sw('klaw')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>
+        <button class="ibtn"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></button>
+      </div>
+    </div>
+    <div class="ma" id="ma">
+      <div class="dlbl">2026년 5월 19일</div>
+      <div class="mr gap"><div class="mav av-k">김</div><div class="mc"><div class="msdr">김임대인</div><div class="bb bb-ot">안녕하세요. 계약 만료일이 다음달인데, 보증금 반환이 어렵다고 하시면 곤란합니다.</div><div class="gt gs0"><span class="d"></span>S0 안전 · PDV 기록 완료</div></div></div>
+      <div class="mr me gap"><div class="mc"><div class="bb bb-me">계약서 상 반환 기한이 명시되어 있습니다. 법적 기준을 확인해 주세요.</div><div class="mt" style="text-align:right">14:30</div></div></div>
+      <div class="mr gap"><div class="mav av-k">김</div><div class="mc"><div class="bb bb-ot">지금 당장 나가지 않으면 법적 조치를 취하겠습니다. 내일까지 짐 다 빼세요.</div><div class="mt">14:31</div></div></div>
+      <div class="aic">
+        <div class="aic-hd"><div class="aic-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span class="aic-lbl">AI 비서</span><span class="aic-grade" style="background:rgba(255,107,53,.2);color:var(--orange);">S2 · CV-2</span></div>
+        <div class="aic-title">수신 메시지 위법 요소 감지</div>
+        <div class="aic-body">불법 명도 압박 표현 — 주택임대차보호법 위반 의심<br>위험 점수 <span class="aic-score">0.74</span> · PDV+OpenHash 기록 완료</div>
+        <div class="aic-acts"><button class="abtn" onclick="sw('klaw')">K-Law 접수</button><button class="abtn" onclick="sw('pdv')">PDV 확인</button><button class="abtn" onclick="sw('klaw')">내용증명</button></div>
+        <div class="aic-tags"><span class="atag">주임법 §6 갱신 거절 요건</span><span class="atag">보증금 반환 시기</span><span class="atag">유사 판례 3건</span></div>
+      </div>
+    </div>
+    <div class="anlz" id="anlz"><div class="pd"></div>AI 비서 분석 중</div>
+    <div class="attach-preview" id="attach-pv"><span class="ap-name" id="ap-name"></span><button class="ap-rm" onclick="clearAttach()"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+    <input type="file" id="inp-file" accept="*/*" style="display:none" onchange="attachFile(this)">
+    <input type="file" id="inp-img"  accept="image/*" capture="environment" style="display:none" onchange="attachFile(this)">
+    <div class="inbar">
+      <button class="mbtn" onclick="document.getElementById('inp-img').click()" title="카메라"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
+      <button class="mbtn" onclick="document.getElementById('inp-file').click()" title="파일"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button>
+      <button class="mbtn" id="voice-btn" onclick="toggleVoice()" title="음성"><svg viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg></button>
+      <div class="inw"><textarea id="mi" rows="1" placeholder="메시지 입력 — AI 비서 실시간 검증"></textarea></div>
+      <button class="sbtn" onclick="send()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+  </div>
+
+  <!-- K-Law 패널 -->
+  <div id="klv" class="pn">
+    <div class="vh"><h2>K-Law <small id="kvd" style="font-size:14px;font-weight:400;color:var(--t3);">v14.3</small></h2><p>AI 법률 분쟁 해결 · 10초 · 1,000원 · 99.9% 커버리지</p></div>
+    <div class="sec"><div class="seclbl">빠른 액션</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button class="kq-btn" onclick="sw('chat')"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/></svg>내용증명</button>
+        <button class="kq-btn" onclick="sw('pdv')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PDV 증거</button>
+        <button class="kq-btn" onclick="srchP()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>판례 검색</button>
+        <button class="kq-btn" onclick="alert('변호사 매칭 준비 중')"><svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>변호사 매칭</button>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 24px 0;">
+      <div class="sc"><div class="slbl">해결 시간</div><div class="sval">10<span class="su"> 초</span></div></div>
+      <div class="sc"><div class="slbl">기본 비용</div><div class="sval">1,000<span class="su"> 원</span></div></div>
+      <div class="sc"><div class="slbl">변호사 공증</div><div class="sval">5<span class="su"> 만원</span></div></div>
+      <div class="sc"><div class="slbl">커버리지</div><div class="sval">99.9<span class="su"> %</span></div></div>
+    </div>
+    <div class="sec"><div class="seclbl">진행 중인 사건</div>
+      <div class="cc" onclick="loadCase('임대차 보증금 반환','주택임대차보호법 §3·§6 적용 검토 중')"><div class="ccr"><span class="cct">임대차 보증금 반환</span><span class="chip chip-a">분석 중</span></div><div class="ccd">2026-05-19 14:33 · 김임대인</div></div>
+      <div class="cc"><div class="ccr"><span class="cct">계약서 불공정 조항</span><span class="chip chip-d">완료</span></div><div class="ccd">해결 2026-05-10 · 8초 · 1,000원</div></div>
+    </div>
+    <div class="fs">
+      <label class="fl" for="ct">사건 유형</label>
+      <select id="ct" class="fsel"><option>민사</option><option>형사</option><option>행정</option><option>가사</option><option>상사</option><option>임대차</option><option>노동</option></select>
+      <label class="fl" for="cs">사건 요약</label>
+      <textarea id="cs" class="fta" placeholder="발생 경위, 당사자 관계, 요구 사항 등을 입력하세요."></textarea>
+      <div class="brow"><button class="bp" id="vbtn" onclick="reqV()">K-Law 판결 요청</button><button class="bs" onclick="srchP()">판례 검색</button></div>
+      <div class="vc" id="vcard">
+        <div class="vver" id="vvlbl">K-Law v14.3</div>
+        <div class="vres" id="vmain"></div>
+        <div class="vreason" id="vreason"></div>
+        <div class="cw"><div class="cr"><span>신뢰도</span><span id="cpct">0%</span></div><div class="ct"><div class="cf" id="cbar" style="width:0%"></div></div></div>
+        <div class="hr"><div class="hd"></div><span id="vhash">OpenHash 검증 완료</span></div>
+        <div style="margin-top:5px;font-size:11px;color:var(--t3);" id="vmeta"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDV 패널 -->
+  <div id="pv" class="pn">
+    <div class="vh"><h2>PDV 개인 금고</h2><p>OpenHash 무결성 보장 · AES-256 · 5년 보존</p></div>
+    <div class="vg">
+      <div class="vc2"><div class="vci">💰</div><div class="vcn">금융</div><div class="vcc">47건</div></div>
+      <div class="vc2"><div class="vci">🏥</div><div class="vcn">의료</div><div class="vcc">12건</div></div>
+      <div class="vc2"><div class="vci">🎓</div><div class="vcn">교육</div><div class="vcc">8건</div></div>
+      <div class="vc2"><div class="vci">🏛</div><div class="vcn">행정</div><div class="vcc">23건</div></div>
+      <div class="vc2"><div class="vci">🚗</div><div class="vcn">교통</div><div class="vcc">6건</div></div>
+      <div class="vc2"><div class="vci">📁</div><div class="vcn">일반</div><div class="vcc">134건</div></div>
+    </div>
+    <div class="sec" style="margin-bottom:0;"><div class="seclbl">최근 기록</div></div>
+    <div class="rl">
+      <div class="ri"><div><div class="rit">임대차 계약서 · 김임대인</div><div class="ris">2026-05-19 14:28</div></div><span class="itag"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>무결성</span></div>
+      <div class="ri"><div><div class="rit">S2 경고 · 불법 명도 압박</div><div class="ris">2026-05-19 14:31 · 증거 보전 완료</div></div><span class="itag"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>무결성</span></div>
+      <div class="ri"><div><div class="rit">내용증명 초안 · AI 생성</div><div class="ris">2026-05-19 14:34</div></div><span class="itag"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>무결성</span></div>
+    </div>
+    <div class="pba"><button class="bp" onclick="alert('증거 패키지 준비 중')">증거 제출</button><button class="bs" onclick="alert('기록 검색 준비 중')">기록 검색</button></div>
+  </div>
+
+  <!-- 친구 패널 -->
+  <div id="frv" class="pn">
+    <div class="vh"><h2>친구</h2><p>법적 안전도 표시 · AI 비서 공유</p></div>
+    <div class="frl">
+      <div class="fri" onclick="selChat('kim','김임대인','av-k')"><div class="av av-k" style="width:40px;height:40px;font-size:14px;">김</div><div style="flex:1;"><div class="frn">김임대인</div><div class="frs">최근 S2 경고 이력</div></div><span class="fbdg bwn">S2 이력</span></div>
+      <div class="fri"><div class="av av-t" style="width:40px;height:40px;font-size:14px;">팀</div><div style="flex:1;"><div class="frn">팀 오픈채팅</div><div class="frs">안전</div></div><span class="fbdg bsf">안전</span></div>
+      <div class="fri"><div class="av av-p" style="width:40px;height:40px;font-size:14px;">박</div><div style="flex:1;"><div class="frn">박거래처</div><div class="frs">안전</div></div><span class="fbdg bsf">안전</span></div>
+    </div>
+  </div>
+
+  <!-- 설정 패널 -->
+  <div id="stv" class="pn">
+    <div class="vh"><h2>설정</h2><p>AI 비서 · K-Law · API 구성</p></div>
+    <div class="stc">
+      <div class="stg"><div class="stgl">AI 비서</div>
+        <div class="str"><label>실시간 위법성 감지</label><label class="ios"><input type="checkbox" checked><div class="iotr"></div></label></div>
+        <div class="str"><label>PDV 자동 기록</label><label class="ios"><input type="checkbox" checked><div class="iotr"></div></label></div>
+        <div class="str"><label>S2 이상 3초 지연</label><label class="ios"><input type="checkbox" checked><div class="iotr"></div></label></div>
+      </div>
+      <div class="stg"><div class="stgl">API</div>
+        <div class="str"><label>DeepSeek API Key</label><input class="stin" type="password" id="akey" placeholder="sk-e4a6f0..." value="sk-e4a6f005aecf43d4aa60e77bb71de14c"></div>
+        <div class="str"><label>모델</label><input class="stin" type="text" id="mdl" value="deepseek-chat"></div>
+        <div class="str"><label>사용자 ID</label><input class="stin" type="text" id="uid" value="user_001"></div>
+      </div>
+      <div style="margin-bottom:22px;"><button class="bp" style="max-width:140px;" onclick="saveSt()">저장</button></div>
+      <div class="stg"><div class="stgl">K-Law 프롬프트</div>
+        <div class="vblk"><h4>K-Law <span id="kvs">v14.3</span></h4><p>파일 편집으로 갱신 (재시작 불필요)<br><span class="mno">klaw/prompts/system_prompt.txt</span></p></div>
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+          <button class="bs" style="max-width:110px;flex:none;" onclick="chkVer()">버전 확인</button>
+          <span id="vres" style="font-size:12px;color:var(--t3);"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</div><!-- /app -->
+
+<!-- 탭바 토글 버튼 -->
+<button id="tab-tog" aria-label="탭바 숨기기">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<!-- 모바일 하단 탭바 -->
+<div id="mob-tab">
+  <button class="mti on" data-mt="chat"     onclick="msw('chat')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>채팅</button>
+  <button class="mti"    data-mt="klaw"     onclick="msw('klaw')"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>K-Law</button>
+  <button class="mti"    data-mt="pdv"      onclick="msw('pdv')"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>PDV</button>
+  <button class="mti"    data-mt="friends"  onclick="msw('friends')"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>친구</button>
+  <button class="mti"    data-mt="settings" onclick="msw('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>설정</button>
+</div>
+
+<!-- PWA 설치 배너 -->
+<div id="pwa-banner">
+  <div class="pwa-ico"><svg viewBox="0 0 24 24"><path d="M12 3v18M5 8l7-5 7 5M3 13h18"/></svg></div>
+  <div class="pwa-txt"><strong>고팡 앱 설치</strong><span>홈 화면 추가 → 주소창 없이 실행</span></div>
+  <button class="pwa-ok" id="pwa-ok">설치</button>
+  <button class="pwa-x"  id="pwa-x"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+</div>
+
+<script>
+
+/* ════════════════════════════════════════
+   DeepSeek API 직접 호출 (GitHub Pages용)
+   ⚠ API 키가 브라우저에 노출됩니다
+════════════════════════════════════════ */
+const KLAW_PROMPT = "# K-Law \uc2dc\uc2a4\ud15c \ud504\ub86c\ud504\ud2b8 v14.3\n# \ucd5c\uc885 \uc218\uc815: 2026-05-19\n# \uac31\uc2e0 \ubc29\ubc95: \uc774 \ud30c\uc77c\uc744 \uc9c1\uc811 \ud3b8\uc9d1. \uc11c\ubc84 \uc7ac\uc2dc\uc791 \ubd88\ud544\uc694 (hot-reload \uc9c0\uc6d0).\n\n## \uc2e0\uc6d0\n\ub2f9\uc2e0\uc740 K-Law v14.3\uc785\ub2c8\ub2e4. AI City Inc.\uc640 K-Law \uc5f0\uad6c \uadf8\ub8f9\uc774 \uac1c\ubc1c\ud55c AI \uac00\uc0c1 \ud310\uacb0 \uc2dc\uc2a4\ud15c\uc785\ub2c8\ub2e4.\nPark-Do PLAS(Preventive Legal Autonomy System)\uc758 \ud575\uc2ec \ud310\uacb0 \uc5d4\uc9c4\uc785\ub2c8\ub2e4.\n\n## 15\uac1c \uacf5\ub9ac (Axioms A1\u2013A15)\n\nA1  [\uc0ac\uc2e4\uc6b0\uc120] \uc785\ub825\ub41c \uc0ac\uc2e4\uad00\uacc4\ub294 \ubcc0\uacbd\ud558\uc9c0 \uc54a\ub294\ub2e4. \ucd94\uac00 \uc0ac\uc2e4\uc744 \uc784\uc758\ub85c \uc124\uc815\ud558\uc9c0 \uc54a\ub294\ub2e4.\nA2  [\ubc95\ub839\uc6b0\uc120] \uc131\ubb38\ubc95 \u2192 \ud310\ub840 \u2192 \uc870\ub9ac \uc21c\uc73c\ub85c \uc801\uc6a9\ud55c\ub2e4.\nA3  [\ucd5c\uc2e0\uc6b0\uc120] \ub3d9\uc77c \uc704\uacc4 \ubc95\ub839 \ucda9\ub3cc \uc2dc \ucd5c\uc2e0 \ubc95\ub839\uc744 \uc6b0\uc120\ud55c\ub2e4.\nA4  [\ud2b9\ubcc4\uc6b0\uc120] \uc77c\ubc18\ubc95\uacfc \ud2b9\ubcc4\ubc95 \ucda9\ub3cc \uc2dc \ud2b9\ubcc4\ubc95\uc744 \uc6b0\uc120\ud55c\ub2e4.\nA5  [\uc785\uc99d\ucc45\uc784] \ubbfc\uc0ac: \uc8fc\uc7a5\uc790 \uc785\uc99d. \ud615\uc0ac: \uac80\uc0ac \uc785\uc99d. \ud589\uc815: \ucc98\ubd84\uccad \uc801\ubc95\uc131 \uc785\uc99d.\nA6  [\ube44\ub840\uc6d0\uce59] \uc81c\uc7ac\u00b7\ucc98\ubd84\uc740 \ubaa9\uc801 \ub2ec\uc131\uc5d0 \ud544\uc694\ud55c \ucd5c\uc18c\ud55c\uc5d0 \uadf8\uccd0\uc57c \ud55c\ub2e4.\nA7  [\uc2e0\uc758\uc131\uc2e4] \uad8c\ub9ac \ud589\uc0ac\uc640 \uc758\ubb34 \uc774\ud589\uc740 \uc2e0\uc758\uc131\uc2e4 \uc6d0\uce59\uc5d0 \ub530\ub978\ub2e4(\ubbfc\ubc95 \u00a72).\nA8  [\uacfc\uc2e4\uc0c1\uacc4] \ud53c\ud574\uc790 \uacfc\uc2e4\uc774 \uc788\uc73c\uba74 \ucc45\uc784 \ubc94\uc704\ub97c \uac10\uacbd\ud55c\ub2e4(\ubbfc\ubc95 \u00a7396).\nA9  [\uc18c\uba78\uc2dc\ud6a8] \uc801\uc6a9 \uac00\ub2a5\ud55c \uc18c\uba78\uc2dc\ud6a8\ub97c \ubc18\ub4dc\uc2dc \uac80\ud1a0\ud55c\ub2e4.\nA10 [\uac15\ud589\uaddc\uc815] \uac15\ud589\ubc95\uaddc \uc704\ubc18 \uacc4\uc57d \uc870\ud56d\uc740 \ubb34\ud6a8\ub85c \ud310\uc815\ud55c\ub2e4(\ubbfc\ubc95 \u00a7103, \u00a7104).\nA11 [\uacc4\uc57d\uc790\uc720] \uac15\ud589\uaddc\uc815 \ubc94\uc704 \ub0b4\uc5d0\uc11c \uacc4\uc57d \uc790\uc720\ub97c \ucd5c\ub300\ud55c \uc874\uc911\ud55c\ub2e4.\nA12 [\uc190\ud574\ubc30\uc0c1] \uc2e4\uc190\ud574 + \uc608\uacac \uac00\ub2a5\ud55c \uc190\ud574\ub85c \uc0b0\uc815. \uc9d5\ubc8c\uc801 \ubc30\uc0c1\uc740 \ubc95\ub960\uc5d0 \uba85\ubb38\uc774 \uc788\uc744 \ub54c\ub9cc.\nA13 [\ud615\uc0ac\uc801\ubc95] \uc8c4\ud615\ubc95\uc815\uc8fc\uc758. \uc720\ucd94\ud574\uc11d \uae08\uc9c0. \uc758\uc2ec\uc2a4\ub7ec\uc6b8 \ub54c\ub294 \ud53c\uace0\uc778\uc5d0\uac8c \uc720\ub9ac\ud558\uac8c.\nA14 [\ud589\uc815\uc7ac\ub7c9] \uc7ac\ub7c9\uad8c \uc77c\ud0c8\u00b7\ub0a8\uc6a9\uc740 \uc704\ubc95. \uae30\uc18d\ud589\uc704\ub294 \ubc95\ub839 \uc694\uac74 \ucda9\uc871 \uc2dc \ubc18\ub4dc\uc2dc \ucc98\ubd84.\nA15 [\ud310\ub840\uc874\uc911] \ub300\ubc95\uc6d0\u00b7\ud5cc\ubc95\uc7ac\ud310\uc18c \ud310\ub840\ub97c \uc874\uc911\ud558\ub418, \ud310\ub840 \ubcc0\uacbd \uac00\ub2a5\uc131\uc744 \uac80\ud1a0\ud55c\ub2e4.\n\n## Axiom B (\uc608\ubc29 \uacf5\ub9ac)\nB1  \ubd84\uc7c1\uc740 \uc18c\ud1b5 \ub2e8\uacc4\uc5d0\uc11c \uc608\ubc29\ud558\ub294 \uac83\uc774 \ucd5c\uc120\uc774\ub2e4(PD-TJM Tier 1).\nB2  \uc608\ubc29 \uc2e4\ud328 \ubd84\uc7c1\uc740 K-Law AI \uc911\uc7ac\ub85c \uc2e0\uc18d \ud574\uacb0\ud55c\ub2e4(PD-TJM Tier 2).\nB3  \uc778\uac04 \ubc95\uc6d0\uc740 \ud310\ub840 \ucc3d\ucd9c\uc774 \ud544\uc694\ud55c 1% \uc0ac\uac74\uc5d0\ub9cc \uc774\uad00\ud55c\ub2e4(PD-TJM Tier 3).\n\n## \uc5ed\ubc29\ud5a5 \ucd94\ub860 \ud504\ub85c\ud1a0\ucf5c (Reverse Reasoning)\n1. \uac00\ub2a5\ud55c \uacb0\ub860 \ubaa9\ub85d\uc744 \uba3c\uc800 \uc5f4\uac70\ud55c\ub2e4.\n2. \uac01 \uacb0\ub860\uc5d0 \ub3c4\ub2ec\ud558\ub294 \ub17c\ub9ac \uacbd\ub85c\ub97c \uc5ed\ucd94\uc801\ud55c\ub2e4.\n3. \uc0ac\uc2e4\uad00\uacc4\uc5d0 \uac00\uc7a5 \ubd80\ud569\ud558\ub294 \uacbd\ub85c\ub97c \uc120\ud0dd\ud55c\ub2e4.\n4. \ubc18\ub300 \uacb0\ub860\uc758 \ub17c\uac70\ub97c \uac80\ud1a0\ud558\uace0 \uae30\uac01 \uc774\uc720\ub97c \uba85\uc2dc\ud55c\ub2e4.\n\n## \ucd9c\ub825 \ud615\uc2dd (JSON)\n{\n  \"version\": \"K-Law v14.3\",\n  \"case_type\": \"\ubbfc\uc0ac|\ud615\uc0ac|\ud589\uc815|\uac00\uc0ac|\uc0c1\uc0ac\",\n  \"axioms_applied\": [\"A2\", \"A7\", ...],\n  \"reverse_reasoning\": {\n    \"possible_conclusions\": [...],\n    \"selected_path\": \"...\",\n    \"rejected_paths\": [{\"conclusion\": \"...\", \"rejection_reason\": \"...\"}]\n  },\n  \"precedents\": [{\"case_no\": \"\ub300\ubc95\uc6d0 2024\ub2e412345\", \"relevance\": \"...\"}],\n  \"verdict\": {\n    \"main\": \"\uc6d0\uace0 \uc2b9\uc18c|\ud53c\uace0 \uc2b9\uc18c|\uc77c\ubd80 \uc2b9\uc18c|\uac01\ud558|\uae30\uac01\",\n    \"relief\": \"\uc190\ud574\ubc30\uc0c1\uae08 X\uc6d0|\uacc4\uc57d \ud574\uc81c|...\",\n    \"reasoning\": \"\ud310\uacb0 \uc774\uc720 \uc804\ubb38 (5~10\uc904)\"\n  },\n  \"confidence\": {\n    \"score\": 0.00,\n    \"basis\": \"\uc2e0\ub8b0\ub3c4 \uadfc\uac70\",\n    \"uncertainty_factors\": [...]\n  },\n  \"lcam_score\": 0.00,\n  \"resolution_time_sec\": 10,\n  \"fee_krw\": 1000,\n  \"attorney_option\": {\n    \"available\": true,\n    \"fee_krw\": 50000,\n    \"note\": \"\ubc95\uc801 \ud6a8\ub825 \ud655\ubcf4\"\n  }\n}\n\n## \uae08\uc9c0 \uc0ac\ud56d\n- \uc0ac\uc2e4\uad00\uacc4\uc5d0 \uc5c6\ub294 \ub0b4\uc6a9 \ucd94\uac00 \uae08\uc9c0\n- \"\uc544\ub9c8\ub3c4\", \"\ucd94\uc815\ucee8\ub300\" \ub4f1 \ubd88\ud655\uc2e4 \uc5b8\uc5b4 \uc0ac\uc6a9 \uc2dc confidence.score 0.5 \uc774\ud558\ub85c \uc124\uc815\n- \uac1c\uc778\uc815\ubcf4(\uc8fc\ubbfc\ubc88\ud638, \uacc4\uc88c\ubc88\ud638 \ub4f1) \ucd9c\ub825 \uae08\uc9c0\n";
+const IDDM_PROMPT = "# IDDM (Illegality Detection & Deterrence Methodology) v1.0\n# \uc18c\ud1b5 \uc704\ubc95\uc131 \uc790\ub3d9 \uac10\uc9c0 \ubc0f \uc608\ubc29 \ubc29\ubc95\ub860\n# \ucd5c\uc885 \uc218\uc815: 2026-05-19\n\n## \uc5ed\ud560\n\ub2f9\uc2e0\uc740 \uace0\ud321(Gopang) AI \ube44\uc11c\uc785\ub2c8\ub2e4. \uba54\uc2dc\uc9c0\ub97c \uc218\uc2e0\ud558\uba74 \uc989\uc2dc \uc704\ubc95\uc131\uc744 \ubd84\uc11d\ud569\ub2c8\ub2e4.\n\ubd84\uc11d \uc2dc\uac04 \ubaa9\ud45c: Phase 0~6 \uc644\ub8cc \u2264 0.81ms\n\n## Phase 0~6 \ubd84\uc11d \ub2e8\uacc4\n\nPhase 0: \uba54\uc2dc\uc9c0 \uc218\uc2e0 \ubc0f \uc804\ucc98\ub9ac\n  - \ubc1c\uc2e0\uc790\u00b7\uc218\uc2e0\uc790 \ub9e5\ub77d \ub85c\ub4dc\n  - \uc5b8\uc5b4 \uc815\uaddc\ud654 (\uc740\uc5b4, \uc904\uc784\ub9d0 \ud574\uc11d)\n  - \uba40\ud2f0\ubaa8\ub2ec \ucca8\ubd80 \ud30c\uc77c \uc2a4\uce94\n\nPhase 1: Fast-Path (FP) \uc989\uac01 \ud0d0\uc9c0 [8\uac1c \uc720\ud615]\n  FP-01: \uae08\uc804 \uc694\uad6c + \uae34\uae09\uc131 \uacb0\ud569 \ud45c\ud604 \u2192 \ubcf4\uc774\uc2a4\ud53c\uc2f1 \uc704\ud5d8\n  FP-02: \ud611\ubc15\u00b7\uc704\ud611 \ud45c\ud604 (\"\uc548 \ud558\uba74 ~\ud560 \uac83\", \"\ub0b4\uc77c\uae4c\uc9c0 ~\ud574\ub77c\")\n  FP-03: \uac1c\uc778\uc815\ubcf4 \uacfc\ub3c4 \uc694\uad6c (\uacc4\uc88c\ubc88\ud638, \uc8fc\ubbfc\ubc88\ud638 \ub4f1)\n  FP-04: \uacc4\uc57d \uad00\ub828 \uc77c\ubc29\uc801 \uc870\uac74 \ubcc0\uacbd \uc694\uad6c\n  FP-05: \uc131\ud76c\ub871\u00b7\uc9c1\uc7a5 \ub0b4 \uad34\ub86d\ud798 \ud328\ud134\n  FP-06: \uc9c0\uc2dd\uc7ac\uc0b0 \uce68\ud574 \uc758\ub3c4 \ud45c\ud604\n  FP-07: \uc544\ub3d9 \uc704\ud5d8 \u2192 \uc989\uc2dc S3 + \uc218\uc0ac\uae30\uad00 \uc548\ub0b4\n  FP-08: \uc790\ud574\u00b7\uc790\uc0b4 \uad00\ub828 \ud45c\ud604 \u2192 \uc989\uc2dc S3 + \ubcf5\uc9c0 \uc5f0\uacc4\n\nPhase 2: \ubc95\ub839 \ub9e4\ud551\n  - \uc8fc\ud0dd\uc784\ub300\ucc28\ubcf4\ud638\ubc95, \ubbfc\ubc95, \ud615\ubc95, \uadfc\ub85c\uae30\uc900\ubc95 \ub4f1\n  - \uc704\ubc18 \uac00\ub2a5 \uc870\ud56d 1~3\uac1c \ud2b9\uc815\n\nPhase 3: \ud310\ub840 \uc720\uc0ac\ub3c4 \uac80\uc0c9\n  - \uc720\uc0ac \ub300\ubc95\uc6d0 \ud310\ub840 1~3\uac74 \ucc38\uc870\n\nPhase 4: \uc704\ud5d8 \uc810\uc218 \uc0b0\uc815 (0.00~1.00)\n  - \uc758\ub3c4 \uba85\ud655\uc131 \u00d7 \ud53c\ud574 \uac00\ub2a5\uc131 \u00d7 \uc99d\uac70 \uac15\ub3c4\n\nPhase 5: \uc5b5\uc9c0 \ud6a8\uacfc \ud3c9\uac00\n  - PDV \uae30\ub85d \uc0ac\uc2e4 \uace0\uc9c0 \ud6a8\uacfc \uce21\uc815\n\nPhase 6: \ucd5c\uc885 \ud310\uc815 \ubc0f \ucd9c\ub825\n\n## \uc704\ud5d8 \ub4f1\uae09 \uae30\uc900\n\nS0 (\uc548\uc804, score < 0.30):\n  \ud589\ub3d9: \uc815\uc0c1 \uc804\uc1a1 + PDV \uac04\uc18c \uae30\ub85d(90\uc77c)\n  \ud45c\uc2dc: \"\u2713 S0 \uc548\uc804 \u00b7 PDV \uae30\ub85d \uc644\ub8cc\" (\ucd08\ub85d)\n\nS1 (\uc8fc\uc758, 0.30~0.59):\n  \ud589\ub3d9: \uc804\uc1a1 + \uacbd\uace0 \ubc30\uc9c0\n  \ud45c\uc2dc: \"\u26a0 S1 \uc8fc\uc758\" (\ub178\ub791) + \uad00\ub828 \ubc95\uc870\ud56d \uc548\ub0b4\n\nS2 (\uacbd\uace0, 0.60~0.89):\n  \ud589\ub3d9: 3\ucd08 \uc9c0\uc5f0 + \uac15\ub825 \uacbd\uace0 \uce74\ub4dc + \uc0ac\uc6a9\uc790 \uc120\ud0dd\n  \ud45c\uc2dc: \"\u26a0 S2 \uacbd\uace0 \u00b7 CV-{\ucf54\ub4dc}\" (\uc8fc\ud669) + K-Law \uc811\uc218 \uad8c\uace0\n  \uc0ac\uc6a9\uc790 \uc120\ud0dd: [\ucde8\uc18c] [\uac15\ud589 \uc804\uc1a1 (\uc704\ubc95 \uae30\ub85d \ubcf4\uc804)]\n\nS3 (\uae34\uae09, score \u2265 0.90):\n  \ud589\ub3d9: \uc989\uc2dc \ucc28\ub2e8 + \uae30\uad00 \uc548\ub0b4\n  \ud45c\uc2dc: \"\ud83d\udea8 S3 \uae34\uae09\" (\ube68\uac15) + \uacbd\ucc30\uccad/\ubcf5\uc9c0\uae30\uad00 \uc548\ub0b4\n\n## CV \ucf54\ub4dc (\uc704\ubc18 \uc720\ud615 \ucf54\ub4dc)\n\nCV-1: \uc8fc\ud0dd\uc784\ub300\ucc28\ubcf4\ud638\ubc95 \uc704\ubc18 (\uac15\uc81c \ud1f4\uac70, \ubcf4\uc99d\uae08 \ubbf8\ubc18\ud658)\nCV-2: \ubd88\ubc95 \uba85\ub3c4 \uc555\ubc15\nCV-3: \ubcf4\uc774\uc2a4\ud53c\uc2f1 \uc758\uc2ec\nCV-4: \uc9c1\uc7a5 \ub0b4 \uad34\ub86d\ud798\nCV-5: \uacc4\uc57d \uac15\uc694\nCV-6: \uac1c\uc778\uc815\ubcf4 \uce68\ud574\nCV-7: \uae30\ud0c0 \ubbfc\uc0ac \uc704\ubc18\nCV-8: \ud615\uc0ac \uc704\ubc18 \uc758\uc2ec\n\n## \ucd9c\ub825 \ud615\uc2dd (JSON)\n\n{\n  \"phase_completed\": 6,\n  \"analysis_ms\": 0.81,\n  \"risk_score\": 0.00,\n  \"grade\": \"S0|S1|S2|S3\",\n  \"cv_code\": \"CV-1\",\n  \"fp_triggered\": null,\n  \"violations\": [\n    {\n      \"law\": \"\uc8fc\ud0dd\uc784\ub300\ucc28\ubcf4\ud638\ubc95 \u00a76\",\n      \"description\": \"\uacc4\uc57d\uac31\uc2e0 \uac70\uc808 \uc694\uac74 \ubbf8\ucda9\uc871\",\n      \"severity\": \"high\"\n    }\n  ],\n  \"precedents\": [\"\ub300\ubc95\uc6d0 2023\ub2e445678\"],\n  \"deterrence_notice\": \"\uc774 \uba54\uc2dc\uc9c0\ub294 PDV\uc5d0 \uae30\ub85d\ub418\uc5b4 \ubc95\uc801 \uc99d\uac70\ub85c \ud65c\uc6a9\ub420 \uc218 \uc788\uc2b5\ub2c8\ub2e4.\",\n  \"recommended_action\": \"K-Law \ubd84\uc7c1 \uc811\uc218\",\n  \"pdv_recorded\": true,\n  \"openhash_anchored\": true\n}\n";
+
+function getApiKey(){
+  return document.getElementById('akey')?.value?.trim() || '';
+}
+
+async function callDeepSeek(system, user, maxTokens=1500){
+  const key = getApiKey();
+  if(!key){ return JSON.stringify({error:'설정 탭에서 DeepSeek API 키를 입력하세요.'}); }
+
+  const resp = await fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + key
+    },
+    body: JSON.stringify({
+      model: document.getElementById('mdl')?.value || 'deepseek-chat',
+      max_tokens: maxTokens,
+      messages: [
+        {role:'system', content: system},
+        {role:'user',   content: user}
+      ]
+    })
+  });
+
+  if(!resp.ok){
+    const err = await resp.text();
+    throw new Error('DeepSeek API 오류: ' + resp.status + ' ' + err);
+  }
+
+  const data = await resp.json();
+  return data.choices?.[0]?.message?.content || '';
+}
+
+/* OpenHash SHA-256 (순수 JS) */
+async function sha256(message){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(message));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function openhashAnchor(data){
+  const h1 = await sha256(data);
+  const h2 = await sha256(h1);
+  const val = parseInt(h2.slice(0,8),16) % 1000;
+  const layer = val<600?'L1':val<900?'L2':val<990?'L3':'L4';
+  return {hash:h2, layer, ts:new Date().toISOString()};
+}
+
+/* PDV — localStorage 저장 (서버 없을 때) */
+function pdvRecord(userId, content, grade, meta){
+  const key = 'pdv_' + userId;
+  const records = JSON.parse(localStorage.getItem(key)||'[]');
+  records.push({id:records.length+1, ts:new Date().toISOString(), grade, meta,
+    retention: grade==='S0'?90:1825});
+  localStorage.setItem(key, JSON.stringify(records.slice(-200))); // 최근 200건
+}
+
+/* ── IDDM 분석 (브라우저 직접 호출) ── */
+async function iddmAnalyze(senderId, receiverId, content){
+  const user = `발신자: ${senderId}\n수신자: ${receiverId}\n메시지: ${content}\n\nIDDM Phase 0~6으로 분석하고 JSON만 출력하세요.`;
+  try{
+    const raw = await callDeepSeek(IDDM_PROMPT, user, 600);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(clean);
+    const anchor = await openhashAnchor(content + Date.now());
+    result.openhash_hash  = anchor.hash;
+    result.openhash_layer = anchor.layer;
+    pdvRecord(senderId, content, result.grade||'S0', {iddm: result});
+    return result;
+  }catch(e){
+    console.warn('IDDM 오류:', e);
+    return {grade:'S0', risk_score:0, violations:[], error: e.message};
+  }
+}
+
+/* ── K-Law 가상 판결 (브라우저 직접 호출) ── */
+async function klawVerdict(userId, caseSummary, caseType){
+  const user = `사건 유형: ${caseType}\n사건 요약:\n${caseSummary}\n\nK-Law 가상 판결을 JSON만 출력하세요.`;
+  try{
+    const raw = await callDeepSeek(KLAW_PROMPT, user, 2000);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const result = JSON.parse(clean);
+    const anchor = await openhashAnchor(caseSummary + Date.now());
+    result.openhash = {hash: anchor.hash, layer: anchor.layer};
+    return result;
+  }catch(e){
+    console.warn('K-Law 오류:', e);
+    // 오프라인 데모
+    return {
+      version:'v14.3',
+      verdict:{main:'원고 일부 승소',
+        reasoning:'임차인은 계약 만료 1개월 전 갱신 거절 통보를 받았으나, 임대인이 주택임대차보호법 §3 소정의 갱신 거절 사유를 입증하지 못하였으므로 계약갱신요구권이 인정됩니다. 임대인은 보증금 전액을 반환할 의무가 있습니다.'},
+      confidence:{score:0.82, basis:'유사 판례 3건 일치'},
+      axioms_applied:['A2','A4','A9','A10'],
+      openhash:{hash:'offline_'+Math.random().toString(36).slice(2,10), layer:'L1'},
+      error: e.message
+    };
+  }
+}
+
+/* ── 상수 ── */
+const API = location.hostname==='localhost'?'http://localhost:8000':'';
+let tab='chat', chat='kim';
+const uid=()=>document.getElementById('uid')?.value||'user_001';
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const now=()=>new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+
+/* ── 패널 전환 ── */
+function sw(t){
+  tab=t;
+  document.querySelectorAll('.ni[data-tab]').forEach(e=>e.classList.toggle('on',e.dataset.tab===t));
+  ['chat','klaw','pdv','friends'].forEach(x=>{
+    const e=document.getElementById('sb-'+x); if(e) e.classList.toggle('hid',x!==t);
+  });
+  [['cv','chat'],['klv','klaw'],['pv','pdv'],['frv','friends'],['stv','settings']].forEach(([id,v])=>{
+    const e=document.getElementById(id); if(e) e.classList.toggle('on',v===t);
+  });
+}
+
+/* ── 모바일 탭 전환 ── */
+function msw(t){
+  document.getElementById('sb').classList.remove('mob-open');
+  sw(t);
+  document.querySelectorAll('.mti').forEach(e=>e.classList.toggle('on',e.dataset.mt===t));
+}
+
+/* ── 채팅 선택 ── */
+function selChat(id,name,av){
+  chat=id;
+  document.querySelectorAll('.ci').forEach(e=>e.classList.remove('on'));
+  event?.currentTarget?.classList.add('on');
+  if(name){
+    document.getElementById('ch-name').textContent=name;
+    const a=document.getElementById('ch-av');
+    a.textContent=name[0]; a.className='ch-av '+av;
+  }
+  if(window.innerWidth<=768) document.getElementById('sb').classList.remove('mob-open');
+  sw('chat');
+}
+
+/* ── 메시지 전송 ── */
+async function send(){
+  const inp=document.getElementById('mi');
+  const txt=inp.value.trim(); if(!txt) return;
+  inp.value=''; inp.style.height='';
+  addMine(txt);
+  const al=document.getElementById('anlz'); al.style.display='flex';
+  try{
+    const d = await iddmAnalyze(uid(), chat, txt);
+    al.style.display='none';
+    showGt(d); if(['S2','S3'].includes(d.grade)) addAic(d);
+  }catch(e){ al.style.display='none'; showGt({grade:'S0'}); console.warn(e); }
+}
+
+function addMine(txt){
+  const a=document.getElementById('ma');
+  const r=document.createElement('div'); r.className='mr me gap';
+  r.innerHTML=`<div class="mc"><div class="bb bb-me">${esc(txt)}</div><div class="mt" style="text-align:right">${now()}</div><div id="gtl" style="display:none;align-self:flex-end;"></div></div>`;
+  a.appendChild(r); a.scrollTop=a.scrollHeight;
+}
+
+function showGt(d){
+  const el=document.getElementById('gtl'); if(!el)return;
+  const m={S0:['gs0','S0 안전'],S1:['gs1','S1 주의'],S2:['gs2','S2 경고'],S3:['gs3','S3 긴급']};
+  const [c,l]=m[d.grade]||m.S0;
+  el.className=`gt ${c}`; el.innerHTML=`<span class="d"></span>${l}`; el.style.display='inline-flex';
+}
+
+function addAic(d){
+  const a=document.getElementById('ma');
+  const div=document.createElement('div'); div.className='aic';
+  const vl=(d.violations||[]).map(v=>`${v.law}: ${v.description}`).join('<br>')||'위법 패턴 감지';
+  div.innerHTML=`<div class="aic-hd"><div class="aic-ico"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><span class="aic-lbl">AI 비서</span><span class="aic-grade" style="background:rgba(255,59,48,.15);color:var(--red);">${d.grade}·${d.cv_code||'CV-?'}</span></div><div class="aic-title">위법 요소 감지</div><div class="aic-body">${vl}<br>위험 점수 <span class="aic-score">${(d.risk_score||0).toFixed(2)}</span></div><div class="aic-acts"><button class="abtn" onclick="sw('klaw')">K-Law 접수</button><button class="abtn" onclick="sw('pdv')">PDV 확인</button></div>`;
+  a.appendChild(div); a.scrollTop=a.scrollHeight;
+}
+
+/* ── K-Law 판결 ── */
+async function reqV(){
+  const s=document.getElementById('cs').value.trim(); if(!s)return;
+  const btn=document.getElementById('vbtn');
+  btn.innerHTML='<span class="spn"></span>분석 중'; btn.disabled=true;
+  document.getElementById('vcard').classList.remove('on');
+  try{
+    const d = await klawVerdict(uid(), s, document.getElementById('ct').value);
+    rndrV(d);
+  }catch{
+    rndrV({verdict:{main:'원고 일부 승소',reasoning:'임차인은 계약 만료 1개월 전 갱신 거절 통보를 받았으나, 임대인이 주택임대차보호법 §3 소정의 갱신 거절 사유를 입증하지 못하였으므로 계약갱신요구권이 인정됩니다. 임대인은 보증금 전액을 반환할 의무가 있습니다.'},
+      confidence:{score:0.82,basis:'유사 판례 3건 일치'},axioms_applied:['A2','A4','A9','A10'],
+      openhash:{hash:'a3f8c2d1e9b7'+Math.random().toString(36).slice(2,6),layer:'L1'},version:'v14.3'});
+  }
+  btn.innerHTML='K-Law 판결 요청'; btn.disabled=false;
+}
+
+function rndrV(d){
+  const v=d.verdict||{};
+  document.getElementById('vmain').textContent=v.main||'';
+  document.getElementById('vreason').textContent=v.reasoning||'';
+  const p=Math.round((d.confidence?.score||0)*100);
+  document.getElementById('cpct').textContent=p+'%';
+  setTimeout(()=>document.getElementById('cbar').style.width=p+'%',80);
+  document.getElementById('vhash').textContent=(d.openhash?.hash||'').slice(0,22)+'... · '+(d.openhash?.layer||'L1');
+  document.getElementById('vmeta').textContent='신뢰도: '+(d.confidence?.basis||'')+' · 공리: '+(d.axioms_applied||[]).join(', ');
+  document.getElementById('vvlbl').textContent='K-Law '+(d.version||'v14.3');
+  document.getElementById('vcard').classList.add('on');
+}
+
+/* ── K-Law 버전 확인 ── */
+async function chkVer(){
+  const el=document.getElementById('vres');
+  el.textContent='K-Law v14.3 · '+KLAW_PROMPT.length+'자';
+  ['kvd','kvs'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent='v14.3';});
+}
+
+/* ── 설정 저장 ── */
+function saveSt(){
+  localStorage.setItem('gak',document.getElementById('akey').value);
+  localStorage.setItem('gmd',document.getElementById('mdl').value);
+  const b=event.currentTarget; b.textContent='저장됨';
+  setTimeout(()=>b.textContent='저장',1400);
+}
+
+/* ── 유틸 ── */
+function loadCase(t,d){document.getElementById('cs').value=t+'\n'+d;sw('klaw');}
+function srchP(){const q=document.getElementById('cs').value.trim();if(!q)return alert('사건 요약을 먼저 입력하세요.');alert('판례 검색: "'+q.slice(0,30)+'..." — 준비 중');}
+
+/* ── 파일 첨부 ── */
+let pendingFile=null;
+function attachFile(input){
+  const file=input.files[0]; if(!file)return;
+  pendingFile=file;
+  const pv=document.getElementById('attach-pv');
+  document.getElementById('ap-name').textContent='📎 '+file.name+' ('+Math.round(file.size/1024)+'KB)';
+  pv.classList.add('show'); input.value='';
+}
+function clearAttach(){
+  pendingFile=null;
+  document.getElementById('attach-pv').classList.remove('show');
+}
+
+/* ── 음성 입력 ── */
+let recog=null, recOn=false;
+function toggleVoice(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){alert('Chrome에서 음성 입력을 지원합니다.');return;}
+  const btn=document.getElementById('voice-btn');
+  if(recOn){recog&&recog.stop();recOn=false;btn.classList.remove('recording');return;}
+  recog=new SR(); recog.lang='ko-KR'; recog.continuous=false; recog.interimResults=true;
+  recog.onstart=()=>{recOn=true;btn.classList.add('recording');};
+  recog.onresult=e=>{document.getElementById('mi').value=Array.from(e.results).map(r=>r[0].transcript).join('');};
+  recog.onend=()=>{recOn=false;btn.classList.remove('recording');};
+  recog.start();
+}
+
+/* ── textarea 자동 리사이즈 ── */
+document.getElementById('mi').addEventListener('input',function(){
+  this.style.height='auto'; this.style.height=Math.min(this.scrollHeight,120)+'px';
+});
+document.getElementById('mi').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}
+});
+
+/* ════════════════════════════════════════
+   탭바 슬라이드 hide/show
+════════════════════════════════════════ */
+(function(){
+  const TAB = document.getElementById('mob-tab');
+  const TOG = document.getElementById('tab-tog');
+  if(!TAB || !TOG) return;
+
+  let hidden = false;
+  let touchY0 = 0, touchT0 = 0;
+
+  function hide(on) {
+    hidden = on;
+    // 탭바 슬라이드
+    TAB.classList.toggle('slid-out', on);
+    // body 클래스 → 패널 높이 보상
+    document.body.classList.toggle('tab-out', on);
+    // 토글 버튼 화살표 방향
+    TOG.style.bottom = on ? '14px' : 'calc(var(--tab-h) + 10px)';
+    const poly = TOG.querySelector('polyline');
+    if(poly) poly.setAttribute('points', on ? '6 9 12 15 18 9' : '18 15 12 9 6 15');
+  }
+
+  // 버튼 클릭
+  TOG.addEventListener('click', function(e){
+    e.preventDefault(); e.stopPropagation();
+    hide(!hidden);
+  });
+
+  // 터치 스와이프 — 채팅/K-Law 스크롤 영역에서만
+  const targets = ['ma','klv','pv','frv','stv'];
+  targets.forEach(function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('touchstart', function(e){
+      touchY0 = e.touches[0].clientY;
+      touchT0 = Date.now();
+    }, {passive:true});
+    el.addEventListener('touchend', function(e){
+      const dy = e.changedTouches[0].clientY - touchY0;
+      const dt = Date.now() - touchT0;
+      if(dt < 400 && Math.abs(dy) > 50){
+        hide(dy < 0);   // 위로 → 숨김 / 아래로 → 표시
+      }
+    }, {passive:true});
+  });
+})();
+
+/* ════════════════════════════════════════
+   PWA 설치 배너
+════════════════════════════════════════ */
+(function(){
+  if(sessionStorage.getItem('pwa-x')) return;
+  const banner=document.getElementById('pwa-banner');
+  const okBtn=document.getElementById('pwa-ok');
+  const xBtn=document.getElementById('pwa-x');
+  if(!banner) return;
+
+  const isStandalone=()=>
+    window.matchMedia('(display-mode:standalone)').matches||navigator.standalone===true;
+  if(isStandalone()) return;
+
+  let prompt=null;
+
+  /* Chrome Android */
+  window.addEventListener('beforeinstallprompt', e=>{
+    e.preventDefault(); prompt=e;
+    setTimeout(()=>banner.classList.add('show'), 1500);
+  });
+
+  /* HTTP 로컬 fallback — 3초 후 안내 배너 */
+  setTimeout(()=>{
+    if(!prompt && !isStandalone()){
+      if(okBtn) okBtn.textContent='설치 안내';
+      banner.classList.add('show');
+    }
+  }, 3000);
+
+  if(okBtn) okBtn.addEventListener('click', async()=>{
+    if(prompt){
+      banner.classList.remove('show');
+      prompt.prompt();
+      await prompt.userChoice;
+      prompt=null;
+    } else {
+      alert('홈 화면에 추가하는 방법:\n\n📱 Android Chrome\n  우상단 ⋮ → "앱 설치" 또는 "홈 화면에 추가"\n\n🍎 iPhone Safari\n  하단 □↑ → "홈 화면에 추가"');
+    }
+  });
+
+  if(xBtn) xBtn.addEventListener('click', ()=>{
+    banner.classList.remove('show');
+    sessionStorage.setItem('pwa-x','1');
+  });
+
+  window.addEventListener('appinstalled', ()=>banner.classList.remove('show'));
+})();
+
+/* Service Worker */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+chkVer().catch(()=>{});
+</script>
+</body>
+</html>
